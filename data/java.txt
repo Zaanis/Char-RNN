@@ -1,0 +1,3161 @@
+public class Main {
+  public static void main(String[] args) {
+    System.out.println("Hello World");
+  }
+}
+import tester.*;
+interface Tweet {
+    Tweet latestTweetOnThread();
+    User longestUsernameOnThread();
+    User getAuthor();
+    String getContents();
+    int getLikes();
+    Tweet getReplyTo();
+    String getDate();
+}
+class User {
+    String username, displayName;
+    int followers;
+    User(String username, String displayName, int followers) {
+        this.username = username;
+        this.displayName = displayName;
+        this.followers = followers;
+    }
+
+    String toText() {
+        return username + " @" + displayName;
+    }
+}
+
+class TextTweet implements Tweet {
+    User author;
+    String contents;
+    String date;
+    int likes;
+
+    TextTweet(String contents, User author, int likes, String date) {
+        this.author = author;
+        this.contents = contents;
+        this.likes = likes;
+        this.date = date;
+        
+    }
+    public Tweet latestTweetOnThread(){
+        return this;
+    }
+
+    // Task 2.2: longestUsernameOnThread
+    public User longestUsernameOnThread(){
+        return author;
+    }
+
+    // Provided methods, DO NOT MODIFY
+    public User getAuthor() {
+        return author;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public Tweet getReplyTo() {
+        return null;
+    }
+    public String getDate(){
+        return date;
+    }
+
+}
+
+class ReplyTweet implements Tweet {
+    User author;
+    String contents;
+    int likes;
+    String date; 
+    Tweet replyTo;
+
+    ReplyTweet(String contents, User author, int likes, String date, Tweet replyTo) {
+        this.author = author;
+        this.contents = contents;
+        this.likes = likes;
+        this.date = date;
+        this.replyTo = replyTo;
+    }
+
+
+    public Tweet latestTweetOnThread(){
+        Tweet t1;
+        if(Integer.parseInt(this.getDate().split("-")[1]) > Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[1])){
+            t1 = this;
+        }
+        else if(Integer.parseInt(this.getDate().split("-")[1]) == Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[1])){
+            if(Integer.parseInt(this.getDate().split("-")[0]) > Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[0])){
+                t1 = this;
+            }
+            else if (Integer.parseInt(this.getDate().split("-")[0]) < Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[0])){
+                t1 = replyTo;
+            }
+            else{
+                t1 = this;
+            }
+        }
+        else{
+            t1 = replyTo;
+        }
+        return t1;
+    }
+
+    public User longestUsernameOnThread(){
+        if(this.getAuthor().username.length() > this.replyTo.longestUsernameOnThread().username.length()){
+            return this.getAuthor();
+        }
+        else if(this.getAuthor().username.length() == this.replyTo.longestUsernameOnThread().username.length()){
+            return replyTo.longestUsernameOnThread();
+        }
+        else{
+            return replyTo.longestUsernameOnThread();
+        }
+    }
+
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public Tweet getReplyTo() {
+        return replyTo;
+    }
+
+    public String getDate(){
+        return date;
+    }
+}
+
+
+class ExampleTweets{
+    User u1 = new User("Joe", "TheRealJoe", 12);
+    User u2 = new User("Jim", "TheFakeJim", 12);
+    Tweet t1 = new TextTweet("Hello, anyone having a good day?", u1, 12, "06-2023");
+    Tweet t5 = new ReplyTweet("Yea pretty good, how about you?", u2, 13, "05-2024", t1);
+    Tweet t2 = new ReplyTweet("Yea pretty good, how about you?", u2, 13, "05-2023", t5);
+    Tweet t3 = new ReplyTweet("Not bad, not bad", u1, 12,"05-2022",t2);
+    Tweet t4 = t3.latestTweetOnThread();
+}
+public class Healer {
+    
+private int attack;
+private String name;
+private int level;
+private int maxhealth;
+private int health;
+private int defense;
+private int magicAttack;
+private int magicDefense;
+private int agility;
+private int wisdom;
+private int exp;
+
+    public Healer(String n){
+        name = n;
+        level = 1;
+        maxhealth = 16;
+        health = maxhealth;
+        attack = 4;
+        defense = 6;
+        magicAttack = 5;
+        magicDefense = 10;
+        agility = 3;
+        wisdom = 12;
+        exp = 0;
+    }
+    public Healer(String n, int lev) {
+        name = n;
+        level = lev;
+        maxhealth = 16*lev;
+        health = maxhealth;
+        attack = 4*lev;
+        defense = 6*lev;
+        magicAttack = 5*lev;
+        magicDefense = 10*lev;
+        agility = 3*lev;
+        wisdom = 12*lev;
+        exp = 0;
+    }
+    public void levelup() {
+        level++;
+        maxhealth += 16;
+        health += 16;
+        attack += 4;
+        defense += 6;
+        magicAttack += 5;
+        magicDefense += 10;
+        agility += 3;
+        wisdom += 12;
+    }        
+    public void gainExp(int expGain) {
+        if(expGain>1000)
+            expGain = 1000;
+        exp += expGain;
+        if(exp >= 1000); {
+            levelup();
+            exp -= 1000;
+        }
+
+    }
+
+}
+import java.util.Scanner; 
+
+public class HeatEnergyRunner { 
+
+    public static void main(String[] args) { 
+        
+        Scanner reader = new Scanner(System.in); 
+        System.out.println("Enter the mass of the water, in grams"); 
+        double mass = reader.nextDouble(); 
+        System.out.println("Enter the intial temperature of the water, in  Celsius"); 
+        double initialTemp = reader.nextDouble(); 
+        if(initialTemp < -273.14) 
+            initialTemp = -273.14; 
+        System.out.println("Enter the final temperature of the water, in  Celsius"); 
+        double finalTemp = reader.nextDouble(); 
+        if(finalTemp < -273.14) 
+            finalTemp = -273.14; 
+        String initialPhase = "liquid"; 
+        if(initialTemp < 0) 
+            initialPhase = "solid"; 
+        if(initialTemp > 100) 
+            initialPhase = "vapor"; 
+        String finalPhase = "liquid"; 
+        if(finalTemp < 0) 
+            finalPhase = "solid"; 
+        if(finalTemp > 100) 
+            finalPhase = "vapor"; 
+        System.out.println("Mass: " + mass + "g"); 
+        System.out.println("Initial tempeature: " + initialTemp + "C " +  initialPhase); 
+        System.out.println("Final tempeature: " + finalTemp + "C " + finalPhase + "\n"); 
+        boolean endothermic = false; 
+        if(finalTemp > initialTemp) 
+            endothermic = true; 
+        double heatEnergy = 0; 
+        //initial phase: solid 
+        if(initialPhase.equals("solid")) { 
+            heatEnergy += tempChangeSolid(mass, initialTemp, finalTemp, finalPhase, endothermic); 
+            if(!finalPhase.equals("solid")) { 
+                heatEnergy += fusion(mass, endothermic); 
+                heatEnergy += tempChangeLiquid(mass, 0, finalTemp, finalPhase, endothermic);
+            }
+            if(finalPhase.equals("vapor")) { 
+                heatEnergy += vaporization(mass, endothermic); 
+                heatEnergy += tempChangeVapor(mass, 100, finalTemp, finalPhase, endothermic); 
+            }
+        }
+        
+        if(initialPhase.equals("liquid")) { 
+            heatEnergy += tempChangeLiquid(mass, initialTemp, finalTemp, finalPhase, endothermic); 
+                if(finalPhase.equals("solid")) { 
+                    heatEnergy += fusion(mass, endothermic); 
+                    heatEnergy += tempChangeSolid(mass, 0, finalTemp, finalPhase, endothermic); 
+                }
+                if(finalPhase.equals("vapor")) { 
+                    heatEnergy += vaporization(mass, endothermic); 
+                    heatEnergy += tempChangeVapor(mass, 100, finalTemp, finalPhase, endothermic); 
+                }
+        }
+        if(initialPhase.equals("vapor")) { 
+            heatEnergy += tempChangeVapor(mass, initialTemp, finalTemp, finalPhase, endothermic); 
+                if(!finalPhase.equals("vapor")) { 
+                    heatEnergy += vaporization(mass, endothermic); 
+                    heatEnergy += tempChangeLiquid(mass, 100, finalTemp, finalPhase, endothermic);  
+                }
+                if(finalPhase.equals("solid")) { 
+                    heatEnergy += fusion(mass, endothermic); 
+                    heatEnergy += tempChangeSolid(mass, 0, finalTemp, finalPhase, endothermic); 
+                }
+            }
+            System.out.println("Total Heat Energy: " + round(heatEnergy) + "kJ"); 
+    }
+    public static double tempChangeSolid(double mass, double startTemp, double endTemp, String endPhase, boolean endothermic) {
+        if(!endPhase.equals("solid")) 
+            endTemp = 0; 
+        double energyChange = round(mass*0.002108*(endTemp - startTemp)); 
+        if(endothermic) 
+            System.out.println("Heating (solid): " + energyChange + "kJ"); 
+        else 
+            System.out.println("Cooling (solid): " + energyChange + "kJ"); 
+        return energyChange; 
+    }
+    public static double tempChangeVapor(double mass, double startTemp, double endTemp, String endPhase, boolean endothermic) { 
+        if(!endPhase.equals("vapor")) 
+            endTemp = 100; 
+        double energyChange = round(mass*0.001996*(endTemp - startTemp)); 
+        if(endothermic) 
+            System.out.println("Heating (vapor): " + energyChange + "kJ"); 
+        else 
+            System.out.println("Cooling (vapor): " + energyChange + "kJ"); 
+        return energyChange; 
+    }
+    public static double tempChangeLiquid(double mass, double startTemp, double endTemp, String endPhase, boolean endothermic) { 
+        if(endPhase.equals("solid")) 
+            endTemp = 0; 
+        if(endPhase.equals("vapor")) 
+            endTemp = 100; 
+        double energyChange = round(mass*0.004184*(endTemp - startTemp)); 
+        if(endothermic) 
+            System.out.println("Heating (liquid): " + energyChange + "kJ"); 
+        else 
+            System.out.println("Cooling (liquid): " + energyChange + "kJ"); 
+        return energyChange; 
+    }
+    public static double fusion(double mass, boolean endothermic) { 
+        double energyChange; 
+        if(endothermic) { 
+            energyChange = round(0.333*mass); 
+            System.out.println("Melting: " + energyChange + "kJ"); 
+        }
+        else { 
+            energyChange = round(-0.333*mass); 
+            System.out.println("Freezing: " + energyChange + "kJ"); 
+        }
+        return energyChange; 
+    }
+    public static double vaporization(double mass, boolean endothermic) { 
+        double energyChange; 
+        if(endothermic) { 
+            energyChange = round(2.257*mass); 
+            System.out.println("Evaporation: " + energyChange + "kJ"); 
+        }
+        else { 
+            energyChange = round(-2.257*mass); 
+            System.out.println("Condensation: " + energyChange + "kJ"); 
+        } 
+        return energyChange; 
+    }
+    public static double round(double x) { 
+        x *= 1000; 
+        if(x > 0) 
+            return (int)(x + 0.5)/1000.0; 
+        else 
+            return (int)(x - 0.5)/1000.0; 
+    }
+}
+import java.util.Scanner;
+
+public class Main
+{
+	public static void main(String[] args) {
+	
+	    Scanner reader = new Scanner(System.in);
+	    int sticks = (int)(Math.random()*10) + 21;
+	    System.out.println("There are " + sticks + " sticks.");
+	    System.out.println("Select 1 to go first, select 2 to go second.");
+	    boolean turn; 
+	    if(reader.nextInt() == 1)
+	        turn = true;
+	    else
+	        turn = false;
+	    
+
+	    while(sticks > 0){
+	        if(turn)
+	           sticks = playerMove(sticks, reader);
+	        else
+	           sticks = computerMove(sticks);
+	       System.out.println("There are " + sticks + " sticks left.");
+	        if(sticks == 0 && turn)  
+	            System.out.println("Player wins!");
+	        if(sticks == 0 && !turn) 
+	            System.out.println("Computer wins.");
+	        turn = !turn;
+	    }
+	}
+	
+	public static int playerMove(int sticks, Scanner reader){
+	    System.out.println("Select how many sticks to take.");
+	    int take = reader.nextInt();
+	    if(take < 1)
+	        take = 1;
+	    if(take > 3)
+	        take = 3;
+	    else if(take > sticks)
+	        take = sticks;
+	    System.out.println("You took " + take + " sticks.");
+	    return sticks - take;
+	}
+	
+	public static int computerMove(int sticks){
+        int take;
+        if(sticks % 4 != 0) 
+           take = sticks % 4; 
+        else  
+           take = (int)(Math.random()*3) + 1;   
+        System.out.println("The computer took " + take + " sticks.");
+        return sticks - take;
+	}
+}
+import java.util.Scanner; 
+
+public class Main
+{
+	public static void main(String[] args) {
+	
+	    Scanner reader = new Scanner(System.in);
+	    System.out.println("Enter distance to target. \n");
+	    double d = reader.nextDouble();
+	    System.out.println("Enter the height of the battery relative to the water line");
+	    double h = reader.nextDouble();
+	    System.out.println("Enter the initial velocity of the shell. \n");
+	    double v = reader.nextDouble();
+	    
+	    double a = -4.9*(d/v)*(d/v);
+	    double b = d;
+	    double c = a + h;
+	    
+	    double tanTheta = (-b + Math.sqrt(b*b - 4*a*c))/(2*a);
+	    double angle = Math.atan(tanTheta)*180/3.1415926536;
+	    System.out.println("The angle is " + angle);
+	    
+	}
+}
+import tester.*;
+// Task 2: TimeStamp class
+class TimeStamp{
+  String date;
+  String month;
+  String year;
+  TimeStamp(String date, String month, String year){
+  this.date = date;
+  this.month = month;
+  this.year = year;
+  }
+}
+// Task 2: Account class
+class Account{
+  double availableBalance;
+  TimeStamp timestamp;
+  String accountID;
+  Account(double availableBalance, TimeStamp timestamp, String accountID){
+    this.availableBalance = availableBalance;
+    this.timestamp = timestamp;
+    this.accountID = accountID;
+  }
+  double deposit(double amount){
+    availableBalance = availableBalance + amount;
+    return availableBalance;
+  }
+  String withdraw(double moneygone){
+    if(availableBalance>=moneygone){
+      availableBalance = availableBalance - moneygone;
+      return "Valid Transaction";
+    }
+    else{
+      return "Invalid Transaction";
+    }
+    
+    }
+  
+}
+
+class BankTransfer {
+
+  // Task 2: At least 1 TimeStamp object
+TimeStamp t1 = new TimeStamp("1","1","2019");
+
+  // Task 2: At least 1 Account object
+Account a1 = new Account(180,t1,"1");
+
+
+  // Task 2: At least 1 call of deposit method
+double d1 = a1.deposit(120);
+  // // Task 2: At least 2 calls of withdraw method
+String w1 = a1.withdraw(120);
+String w2 = a1.withdraw(1000);
+}
+import tester.*;
+class User{
+    String username;
+    String displayname;
+    int followers;
+    User(String username, String displayname, int followers){
+        this.username = username;
+        this.displayname = displayname;
+        this.followers = followers;
+    }
+    String toText(){
+        return displayname + " @" + username;
+    }
+}
+
+class Tweet{
+    User user;
+    String content;
+    int likes;
+    String ID;
+    Tweet(String content, User user, int likes, String ID){
+        this.user = user;
+        this.content = content;
+        this.likes = likes;
+        this.ID = ID;
+    }
+    boolean longerThan(Tweet other){
+        if(this.content.length() > other.content.length()){
+            return true;
+        }
+        else{
+            return false;
+        }
+    
+    }
+    boolean moreLikes(Tweet other){
+        if(this.likes > other.likes){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    String toText(){
+        return user.toText() + " : " + this.content + " : " + this.likes + " Likes";
+    }
+    String toLink(){
+        return "https://twitter.com/" + user.displayname + "/status/" + this.ID;
+}
+}
+import tester.*;
+class Line {
+    int slope = 2;
+    int intercept = 3;
+    int x = 5;
+    int computeY(int slope, int x, int intercept){
+        return slope*x + intercept;
+    }
+    double calculateSlope(double x1, double y1, double x2, double y2){
+        return (y2-y1)/(x2-x1);
+    }
+    int y = this.computeY(slope, x, intercept);
+    double slope2 = this.calculateSlope(1,1,2,2);
+    double slope3 = this.calculateSlope(2,2,2,2);
+}
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.Arrays;
+import java.util.List;
+interface Query{
+    String[] execute(List<String> data);
+}
+interface Transform{
+    String[]execute(List<String>data);
+}
+
+class StringSearch{
+    public static void main(String args[]) throws IOException{
+        String y = args[0];
+        List<String> lines = Files.readAllLines(Paths.get(y));
+        String[]result = new String[lines.size()];
+        if(args.length >=2){
+          if(args[1].contains("&")==false){
+          String [] x = args[1].split("=");
+            if(x[0].equals("contains")){
+                String []z = x[1].split("'");
+                Query test = new Contain(lines,z[1]);
+                lines = Arrays.asList(test.execute(lines));
+            }
+            if(x[0].equals("greater")){
+                String num = x[1];
+                Query test = new Greater(lines,num);
+                lines = Arrays.asList(test.execute(lines));                
+            }
+            if(x[0].equals("length")){
+              String num = x[1];
+              Query test = new Length(lines,num);
+              lines = Arrays.asList(test.execute(lines));                
+            }
+            if(x[0].equals("less")){
+              String num = x[1];
+              Query test = new Lesser(lines,num);
+              lines = Arrays.asList(test.execute(lines));
+            }  
+            if(x[0].equals("starts")){
+              String []z = x[1].split("'");
+              String z1 = z[1];
+              Query test = new Starts(lines,z1);
+              lines = Arrays.asList(test.execute(lines));
+            }
+            if(x[0].equals("ends")){
+              String []z = x[1].split("'");
+              String z1 = z[1];
+              Query test = new Ends(lines,z1);
+              lines = Arrays.asList(test.execute(lines));
+            }
+            if(x[0].indexOf("not") > -1){
+              String []not = x[0].split("\\(");
+              if(not[1].equals("contains")){
+                String []z = x[1].split("'");
+                String z1 = z[1];
+                Query test = new NContain(lines,z1);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("length")){
+                String []l = x[1].split("\\)");
+                String len = l[0]; 
+                Query test = new NLength(lines,len);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("greater")){
+                String []l = x[1].split("\\)");
+                String len = l[0]; 
+                Query test = new NGreater(lines,len);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("less")){
+                String []l = x[1].split("\\)");
+                String len = l[0]; 
+                Query test = new NLesser(lines,len);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("starts")){
+                String []z = x[1].split("'");
+                String z1 = z[1];
+                Query test = new NStarts(lines,z1);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("ends")){
+                String []z = x[1].split("'");
+                String z1 = z[1];
+                Query test = new NEnds(lines,z1);
+                lines = Arrays.asList(test.execute(lines));
+              }
+        }}    
+        if(args[1].contains("&")){
+          String [] x1 = args[1].split("&");
+          for(int i =0; i<x1.length;i++){
+            String [] z = x1[i].split("=");
+            if(z[0].equals("contains")){
+                Query test = new Contain(lines,z[1].split("'")[1]);
+                lines = Arrays.asList(test.execute(lines));
+            }
+            if(z[0].equals("greater")){
+                Query test = new Greater(lines,z[1]);
+                lines = Arrays.asList(test.execute(lines));                
+            }
+            if(z[0].equals("length")){
+              Query test = new Length(lines,z[1]);
+              lines = Arrays.asList(test.execute(lines));                
+            }
+            if(z[0].equals("less")){
+              Query test = new Lesser(lines,z[1]);
+              lines = Arrays.asList(test.execute(lines));                
+            }
+            if(z[0].equals("starts")){
+              Query test = new Starts(lines,z[1].split("'")[1]);
+              lines = Arrays.asList(test.execute(lines));                
+            }
+            if(z[0].equals("ends")){
+              Query test = new Ends(lines,z[1].split("'")[1]);
+              lines = Arrays.asList(test.execute(lines));                
+            }
+            if(z[0].indexOf("not") > -1){ // not(contains='his')
+              String []not = z[0].split("\\(");
+              if(not[1].equals("contains")){
+                String []z2 = z[1].split("'");
+                Query test = new NContain(lines,z2[1]);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("length")){ //not(length=18)
+                String []l = z[1].split("\\)");
+                String len = l[0]; 
+                Query test = new NLength(lines,len);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("greater")){
+                String []l = z[1].split("\\)");
+                String len = l[0]; 
+                Query test = new NGreater(lines,len);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("less")){
+                String []l = z[1].split("\\)");
+                String len = l[0]; 
+                Query test = new NLesser(lines,len);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("starts")){
+                String []z2 = z[1].split("'");
+                Query test = new NStarts(lines,z2[1]);
+                lines = Arrays.asList(test.execute(lines));
+              }
+              if(not[1].equals("ends")){
+                String []z2 = z[1].split("'");
+                Query test = new NEnds(lines,z2[1]);
+                lines = Arrays.asList(test.execute(lines));
+              }
+    }}}}
+        if(args.length == 3){
+          if(args[2].contains("&")==false){
+            String [] transform = args[2].split("=");
+            if(transform[0].equals("upper")){
+              Transform test2 = new upper();
+              lines = Arrays.asList(test2.execute(lines));
+          }
+            if(transform[0].equals("lower")){
+            Transform test2 = new lower();
+            lines = Arrays.asList(test2.execute(lines));
+          }
+           if(transform[0].equals("first")){
+            String num = transform[1];
+            Transform test2 = new first(num);
+            lines = Arrays.asList(test2.execute(lines));
+          }
+            if(transform[0].equals("last")){
+            String num = transform[1];
+            Transform test2 = new last(num);
+            lines = Arrays.asList(test2.execute(lines));
+          }
+            if(transform[0].equals("replace")){
+            String replc = transform[1].split(";")[0].replace("'","");
+            String replacement = transform[1].split(";")[1].replace("'","");
+            Transform test2 = new replace(replc,replacement);
+            lines = Arrays.asList(test2.execute(lines));
+          }
+        }
+        if(args[2].contains("&")){
+          String [] transform = args[2].split("&"); //"upper&lower"
+          for(int i =0; i<transform.length;i++){
+            String[]transform2 = transform[i].split("=");
+            if(transform2[0].equals("upper")){
+              Transform test2 = new upper();
+              lines = Arrays.asList(test2.execute(lines));
+            }
+            if(transform2[0].equals("lower")){
+              Transform test2 = new lower();
+              lines = Arrays.asList(test2.execute(lines));
+              }
+            if(transform2[0].equals("first")){
+              String num = transform2[1];
+              Transform test2 = new first(num);
+              lines = Arrays.asList(test2.execute(lines));
+            }
+            if(transform2[0].contains("last")){
+              String num = transform2[1];
+              Transform test2 = new last(num);
+              lines = Arrays.asList(test2.execute(lines));
+            }
+            if(transform2[0].equals("replace")){
+              String replc = transform2[1].split(";")[0].replace("'","");
+              String replacement = transform2[1].split(";")[1].replace("'","");
+              Transform test2 = new replace(replc,replacement);
+              lines = Arrays.asList(test2.execute(lines));
+            }
+          }
+        }}
+        
+        result = List2Array(lines); 
+        printArray(result);
+      
+    }
+    public static void printArray(String[] data) {
+          for(int i =0; i<data.length;i++) {
+              if(data[i] != null){
+              System.out.println(data[i]);
+                }
+          }
+          }
+    public static String[] List2Array(List<String> list){
+              String [] strings = new String[list.size()];
+              for(int i =0; i< list.size(); i++){
+                  strings[i]=list.get(i);
+          }
+          return strings;
+      }
+    }
+
+class Contain implements Query{
+    List<String> data;
+    String x;
+    Contain(List<String> data, String x){
+        this.data = data;
+        this.x=x;
+    }
+    public String[] execute(List<String> data) {
+        int count = 0;
+        for(int i =0; i< data.size(); i++){
+        if(data.get(i).contains(x)){
+            count++;
+        }}
+        String [] strings = new String[count];
+        int g = 0;
+        for(int i =0; i<data.size();i++){
+            if(data.get(i).contains(x)){
+                strings[g] = data.get(i);
+                g++;
+            }
+        }
+        return strings;
+    } 
+}
+class Length implements Query{
+  List<String> data;
+  String x;
+  Length(List<String> data, String x){
+    this.data = data;
+    this.x=x;
+}
+  public String[] execute(List<String> data) {
+    int count = 0;
+    for(int i = 0; i < data.size();i++){
+      if(data.get(i).length() == Integer.parseInt(x)){
+          count++;
+      }
+    }
+      String [] strings = new String[count]; 
+      int g = 0;
+      for(int i =0; i<data.size();i++){
+        if(data.get(i).length() == Integer.parseInt(x)){
+            strings[g] = data.get(i);
+            g++;
+        }
+  }
+  return strings;
+}
+}
+class Greater implements Query{
+  List<String> data;
+  String x;
+  Greater(List<String> data, String x){
+    this.data = data;
+    this.x=x; 
+}
+public String[] execute(List<String> data) {
+  int count = 0;
+  for(int i = 0; i < data.size();i++){
+    if(data.get(i).length() > Integer.parseInt(x)){
+        count++;
+    }
+  }
+    String [] strings = new String[count]; 
+    int g = 0;
+    for(int i =0; i<data.size();i++){
+      if(data.get(i).length() > Integer.parseInt(x)){
+          strings[g] = data.get(i);
+          g++;
+      }
+}
+return strings;
+}}
+class Lesser implements Query{
+  List<String> data;
+  String x;
+  Lesser(List<String> data, String x){
+    this.data = data;
+    this.x=x; 
+}
+public String[] execute(List<String> data) {
+  int count = 0;
+  for(int i = 0; i < data.size();i++){
+    if(data.get(i).length() < Integer.parseInt(x)){
+        count++;
+    }
+  }
+    String [] strings = new String[count]; 
+    int g = 0;
+    for(int i =0; i<data.size();i++){
+      if(data.get(i).length() < Integer.parseInt(x)){
+          strings[g] = data.get(i);
+          g++;
+      }
+}
+return strings;
+}}
+class Starts implements Query{
+  List<String> data;
+  String x;
+  Starts(List<String> data, String x){
+    this.data = data;
+    this.x=x; 
+  }
+    public String[] execute(List<String> data) {
+      int count = 0;
+      for(int i = 0; i < data.size();i++){
+        if((data.get(i).substring(0, x.length())).equals(x)){
+            count++;
+        } 
+    }
+        String [] strings = new String[count]; 
+        int g = 0;
+        for(int i = 0; i < data.size();i++){
+          if((data.get(i).substring(0, x.length())).equals(x)){
+              strings[g] = data.get(i);
+              g++;
+          } 
+      }
+      return strings;
+    }
+    }
+class Ends implements Query{
+    List<String> data;
+    String x;
+    Ends(List<String> data, String x){
+        this.data = data;
+        this.x=x; 
+      }
+        public String[] execute(List<String> data) {
+          int count = 0;
+          for(int i = 0; i < data.size();i++){
+            if((data.get(i).substring(data.get(i).length()-x.length(), data.get(i).length())).equals(x)){
+                count++;
+            } 
+        }
+            String [] strings = new String[count]; 
+            int g = 0;
+            for(int i = 0; i < data.size();i++){
+              if((data.get(i).substring(data.get(i).length()-x.length(), data.get(i).length())).equals(x)){
+                  strings[g] = data.get(i);
+                  g++;
+              } 
+          }
+          return strings;
+        }
+        }
+class NContain implements Query{
+    List<String> data;
+    String x;
+    NContain(List<String> data, String x){
+        this.data = data;
+        this.x=x;
+    }
+    public String[] execute(List<String> data) {
+        int count = 0;
+        for(int i =0; i< data.size(); i++){
+        if(data.get(i).contains(x) == false){
+            count++;
+        }}
+        String [] strings = new String[count];
+        int g = 0;
+        for(int i =0; i<data.size();i++){
+            if(data.get(i).contains(x) ==false){
+                strings[g] = data.get(i);
+                g++;
+            }
+        }
+        return strings;
+    } 
+}
+class NLength implements Query{
+  List<String> data;
+  String x;
+  NLength(List<String> data, String x){
+    this.data = data;
+    this.x=x;
+}
+  public String[] execute(List<String> data) {
+    int count = 0;
+    for(int i = 0; i < data.size();i++){
+      if(data.get(i).length() != Integer.parseInt(x)){
+          count++;
+      }
+    }
+      String [] strings = new String[count]; 
+      int g = 0;
+      for(int i =0; i<data.size();i++){
+        if(data.get(i).length() != Integer.parseInt(x)){
+            strings[g] = data.get(i);
+            g++;
+        }
+  }
+  return strings;
+}
+} 
+class NGreater implements Query{
+  List<String> data;
+  String x;
+  NGreater(List<String> data, String x){
+    this.data = data;
+    this.x=x; 
+}
+public String[] execute(List<String> data) {
+  int count = 0;
+  for(int i = 0; i < data.size();i++){
+    if(data.get(i).length() < Integer.parseInt(x)){
+        count++;
+    }
+  }
+    String [] strings = new String[count]; 
+    int g = 0;
+    for(int i =0; i<data.size();i++){
+      if(data.get(i).length() < Integer.parseInt(x)){
+          strings[g] = data.get(i);
+          g++;
+      }
+}
+return strings;
+}}
+class NLesser implements Query{
+  List<String> data;
+  String x;
+  NLesser(List<String> data, String x){
+    this.data = data;
+    this.x=x; 
+}
+public String[] execute(List<String> data) {
+  int count = 0;
+  for(int i = 0; i < data.size();i++){
+    if(data.get(i).length() > Integer.parseInt(x)){
+        count++;
+    }
+  }
+    String [] strings = new String[count]; 
+    int g = 0;
+    for(int i =0; i<data.size();i++){
+      if(data.get(i).length() > Integer.parseInt(x)){
+          strings[g] = data.get(i);
+          g++;
+      }
+}
+return strings;
+}}
+class NStarts implements Query{
+  List<String> data;
+  String x;
+  NStarts(List<String> data, String x){
+    this.data = data;
+    this.x=x; 
+  }
+    public String[] execute(List<String> data) {
+      int count = 0;
+      for(int i = 0; i < data.size();i++){
+        String []start = data.get(i).split(" ");
+        if(start[0].indexOf(x) != 0){
+            count++;
+        } 
+    }
+        String [] strings = new String[count]; 
+        int g = 0;
+        for(int i = 0; i < data.size();i++){
+          String []start = data.get(i).split(" ");
+          if(start[0].indexOf(x) != 0){
+              strings[g] = data.get(i);
+              g++;
+          } 
+      }
+      return strings;
+    }
+    }
+class NEnds implements Query{
+      List<String> data;
+      String x;
+      NEnds(List<String> data, String x){
+        this.data = data;
+        this.x=x; 
+      }
+      public String[] execute(List<String> data) {
+      int count = 0;
+      String str = "";
+      char ch;
+      for(int i =0; i<x.length();i++){
+        ch = x.charAt(i);
+        str = ch+str;
+    }
+    for(int i = 0; i < data.size();i++){
+      String []start = data.get(i).split(" ");
+      String z2 = start[start.length-1];
+      String str2 = "";
+      char ch2;
+      for(int g =0; g<z2.length();g++){
+          ch2 = z2.charAt(g);
+          str2 = ch2+str2;
+      }
+      if(str2.indexOf(str)!=0){
+          count++;
+      }     
+  
+  }
+  int z = 0;
+  String [] strings = new String[count];
+  for(int i = 0; i < data.size();i++){
+    String []start = data.get(i).split(" ");
+    String z2 = start[start.length-1];
+    String str2 = "";
+    char ch2;
+    for(int g =0; g<z2.length();g++){
+        ch2 = z2.charAt(g);
+        str2 = ch2+str2;
+    }
+    if(str2.indexOf(str)!=0){
+        strings[z] = data.get(i);
+        z++;
+    }     
+  
+  }
+  return strings;
+    }
+    }
+class upper implements Transform{
+      public String[] execute(List<String> data) {
+        String []data2 = new String[data.size()];
+        int i =0;
+        for (String s : data){
+          data2[i] = s.toUpperCase();
+          i++;
+        }
+        return data2;
+      }
+      
+    }
+class lower implements Transform{
+      public String[] execute(List<String> data) {
+        String []data2 = new String[data.size()];
+        int i =0;
+        for (String s : data){
+          data2[i] = s.toLowerCase();
+          i++;
+        }
+        return data2;
+      }
+      
+    }
+class first implements Transform{
+      String x;
+      first(String x){
+        this.x=x;
+      }
+      public String[] execute(List<String> data) {
+        String[]strings = new String[data.size()];
+        for(int i =0; i<data.size(); i++){
+          if(Integer.parseInt(x) > data.get(i).length()){
+            strings[i]=data.get(i);
+          }
+          if(data.get(i).length() > Integer.parseInt(x)){
+            strings[i]=data.get(i).substring(0,Integer.parseInt(x));
+          }
+        }
+        return strings;
+      }
+    }
+class last implements Transform{
+      String x;
+      last(String x){
+        this.x=x;
+      }
+      public String[] execute(List<String> data) {
+        String[]strings = new String[data.size()];
+        for(int i =0; i<data.size(); i++){
+          if(Integer.parseInt(x) > data.get(i).length()){
+            strings[i]=data.get(i);
+          }
+          if(data.get(i).length() > Integer.parseInt(x)){
+            strings[i]=data.get(i).substring(data.get(i).length()-Integer.parseInt(x),data.get(i).length());
+          }
+        }
+        return strings;
+      }
+    }
+class replace implements Transform{
+      String x;
+      String y;
+      replace(String x, String y){
+        this.x=x;
+        this.y=y;
+      }
+      public String[] execute(List<String> data){
+        String []data2 = new String[data.size()];
+        int i =0;
+        for (String s : data){
+          data2[i] = s.replace(x,y);
+          i++;
+        }
+        return data2;
+      }
+    }
+
+import tester.*;
+class DesignRecipeExamples {
+    int perimeter(int width, int height){
+        return 2*width + 2*height;
+    }
+    int borderArea(int width1, int height1, int width2, int height2){
+        return width1 * height1 - width2 * height2;
+    }
+    int F2C(int Fahrenheit){
+        //This method converts Fahrenheight to Celcius using the formula found on Google. It takes a integer parameter//
+        return (Fahrenheit-32) * 5 / 9;
+    }
+    int FeetnInch(int Feet, int inch){
+        return Feet * 12 + inch;
+        //This method combines feet and inches into total inches using the formula total inch = Feet*12 + inch. It takes 2 integer parameters//
+    }
+
+    int p1example1 = this.perimeter(1,2);
+
+    int p1example2 = this.perimeter(3,3);
+
+    int p2example1 = this.borderArea(5,5,3,3);
+
+    int p2example2 = this.borderArea(6,6,4,4);
+
+    int p3example1 = this.F2C(60);
+ 
+    int p3example2 = this.F2C(90);
+   
+    int p4example1 = this.FeetnInch(6,1);
+ 
+    int p4example2 = this.FeetnInch(7,7);
+ 
+}
+
+import tester.*;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.ArrayList;
+
+class Point {
+  int x, y;
+  Point(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
+  double distance(Point other) {
+    return Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2));
+  }
+}
+class CompareLists{
+  <E> E minimum(List<E> list, Comparator<E> comp) {
+    if(list.size()==0) {
+      return null;
+    }
+    list.sort(comp); 
+    return list.get(0);
+  }
+  void test1(Tester t) {
+    List<String> t1 = Arrays.asList("c", "b", "a");
+    List<Boolean> t2 = Arrays.asList(true, false);
+    t.checkExpect(minimum(t1, new StringCompare()), "a");
+    t.checkExpect(minimum(t1, new StringLengthCompare()), "a");
+    t.checkExpect(minimum(t2, new BooleanCompare()), false);
+  }
+  <E> E minimum(E[] array, Comparator<E> comp) {
+    if(array.length == 0) {
+      return null;
+    }
+    List<E> newlist = new ArrayList<>(Arrays.asList(array));
+    newlist.sort(comp);
+    return newlist.get(0);
+  }
+  void test2(Tester t) {
+    String[] t1 = new String[]{ "a","b","c" };     
+    Boolean[] t2 = new Boolean[]{true,false};
+    t.checkExpect(minimum(t1, new StringCompare()), "a");
+    t.checkExpect(minimum(t1, new StringLengthCompare()), "a");
+    t.checkExpect(minimum(t2, new BooleanCompare()), false);
+  }
+  <E> List<E> greaterThan(List<E> list, Comparator<E> comp, E element) {
+    List<E> newlist = new ArrayList<E>();
+    for(int i = 0; i < list.size(); i++) {
+      if (comp.compare(list.get(i),element) > 0) {
+        newlist.add(list.get(i));
+      }
+    }
+    newlist.sort(comp);
+    return newlist;
+  }
+  void test3(Tester t) {
+    List<String> t1 = new ArrayList<>(Arrays.asList("aa", "bbb", "cccc"));
+    List<Boolean> t2 = new ArrayList<>(Arrays.asList(true, false));
+    List<Boolean> exp1 = Arrays.asList();
+    t.checkExpect(greaterThan(t1, new StringCompare(), "a"), t1);
+    t.checkExpect(greaterThan(t1, new StringLengthCompare(), "a"), t1);
+    t.checkExpect(greaterThan(t2, new BooleanCompare(), true), exp1);
+  }
+  <E> boolean inOrder(List<E> list, Comparator<E> comp) {
+    if(list.contains(null)) {
+      throw new IllegalArgumentException("null value in list");
+    }
+    List<E> t1 = new ArrayList<>(list);
+    List<E> t2 = new ArrayList<>(list);
+    t1.sort(comp);
+    if(t1.equals(t2)) { 
+      return true;
+    }
+    return false; 
+  }
+  void test4(Tester t) {
+    List<String> t1 = Arrays.asList("a", "bb", "c");
+    List<Boolean> t2 = Arrays.asList(false, true);
+    List<String> t3 = Arrays.asList("a", "b", "c", null); 
+    t.checkExpect(inOrder(t1, new StringCompare()), true);
+    t.checkExpect(inOrder(t1, new StringLengthCompare()), false);
+    t.checkExpect(inOrder(t2, new BooleanCompare()), true); 
+    t.checkException(new IllegalArgumentException("null value in list"), new CompareLists(), "inOrder", t3, new StringCompare());
+  }
+  <E> boolean inOrder(E[] list, Comparator<E> comp) {
+    List<E> newlist = new ArrayList<>(Arrays.asList(list));
+    if (newlist.contains(null)) {
+      throw new IllegalArgumentException("null value in array");
+    }
+    List<E> list2 = new ArrayList<>(Arrays.asList(list));
+    list2.sort(comp);
+    if(list2.equals(newlist)) {
+      return true;
+    }
+    return false;
+  }
+  void test5(Tester t) {
+    String[] t1 = {"aaa", "bb", "c"};
+    Boolean[] t2 = {true, false};
+    String[] t3 = {"a", "bb", "ccc", null};
+    t.checkExpect(inOrder(t1, new StringCompare()), true);
+    t.checkExpect(inOrder(t1, new StringLengthCompare()), false);
+    t.checkExpect(inOrder(t2, new BooleanCompare()), false);
+    t.checkException(new IllegalArgumentException("null value in array"), new CompareLists(), "inOrder", t3, new StringLengthCompare());
+  }
+  <E> List<E> merge(Comparator<E> comp, List<E> list1, List<E> list2) {
+    if (list1.contains(null)) {
+      throw new IllegalArgumentException("null value in first list");
+    } 
+    if (list2.contains(null)) {
+      throw new IllegalArgumentException("null value in second list");
+    } 
+      int lowestsize = 0;
+      List<E> newlist1 = list1;
+      List<E> newlist2 = list2;
+      if(list1.size() < list2.size()) {
+        lowestsize = list1.size();
+        newlist1 = list2;
+        newlist2 = list1;
+      } 
+      else {
+        lowestsize = list2.size();
+      }
+      for (int i = 0; i < lowestsize; i++) {
+        newlist1.add(newlist2.get(i));
+      }
+      newlist1.sort(comp);
+      return newlist1;
+  }
+  void test6(Tester t) {
+    List<String> t1 = new ArrayList<>(Arrays.asList("a", "bb", "ccc"));
+    List<String> t2 = new ArrayList<>(Arrays.asList("dddd", "eeeee", "ffffff"));
+    List<String> t3 = new ArrayList<>(Arrays.asList("a", "bb", "ccc", null));
+    List<String> t4 = new ArrayList<>(Arrays.asList("dddd", "eeeee", "ffffff", null));
+    List<String> e1 = Arrays.asList("a", "bb", "ccc", "dddd", "eeeee", "ffffff");
+    t.checkExpect(merge(new StringLengthCompare(), t1, t2), e1);
+    t.checkException(new IllegalArgumentException("null value in first list"), new CompareLists(), "merge", new StringCompare(), t3, t1);
+    t.checkException(new IllegalArgumentException("null value in second list"), new CompareLists(), "merge", new BooleanCompare(), t2, t4);
+  }
+}
+
+class PointCompare implements Comparator<Point> {
+  public int compare(Point p1, Point p2) {
+    if (p1.y < p2.y) {
+      return -1;
+    } 
+    if (p1.y > p2.y) {
+      return 1;
+    } 
+    if (p1.y == p2.y) {
+      if (p1.x < p2.x) {
+        return -1;
+      } else if (p1.x > p2.x){
+        return 1;
+      }
+    }
+    return 0;
+  }
+  void test(Tester t) {
+    Point p1 = new Point(0,0);
+    Point p2 = new Point(10,10);
+    t.checkExpect(compare(p1, p1), 0);
+    t.checkExpect(compare(p1, p2), -1);
+    t.checkExpect(compare(p2, p1), 1);
+    t.checkExpect(compare(p2, p2), 0);
+  }
+}
+class PointDistanceCompare implements Comparator<Point> {
+  public int compare(Point p1, Point p2) {
+    Point o = new Point(0,0);
+    if(p1.distance(o) < p2.distance(o)) {
+      return -1;
+    } 
+    if (p1.distance(o) > p2.distance(o)) {
+      return 1;
+    }
+    return 0;
+  }
+  void test(Tester t) {
+    Point p1 = new Point(-5,-5);
+    Point p2 = new Point(10,10);
+    t.checkExpect(compare(p1, p1), 0);
+    t.checkExpect(compare(p1, p2), 1);
+    t.checkExpect(compare(p2, p1), -1);
+    t.checkExpect(compare(p2, p2), 0);
+  }
+}
+class StringCompare implements Comparator<String>{
+  public int compare(String s1, String s2) {
+    return s1.compareTo(s2);
+  }
+  void test(Tester t) {
+    t.checkExpect(compare("hello", "hello"), 0);
+    t.checkExpect(compare("hellos", "hello"), 1);
+    t.checkExpect(compare("hello", "hellos"), -1);
+    t.checkExpect(compare("a", "a"), 0);
+  }
+}
+class StringLengthCompare implements Comparator<String>{
+  public int compare(String s1, String s2) {
+    if(s1.length()<s2.length()){
+      return -1;
+    }
+    if(s1.length()>s2.length()){
+      return 1;
+    }
+    return 0;
+  }
+  void test(Tester t) {
+    t.checkExpect(compare("hello", "hi"), 1);
+    t.checkExpect(compare("hi", "hello"), -1);
+    t.checkExpect(compare("hello", "hello"), 0);
+    t.checkExpect(compare("a", "a"), 0);
+}
+}
+class BooleanCompare implements Comparator<Boolean>{
+  public int compare(Boolean b1, Boolean b2) {
+    if(b1 == false && b2 == true){
+      return -1;
+    }
+    if(b1 == true && b2 == false){
+      return 1;
+    }
+      return 0;
+  }
+  void test(Tester t) {
+    t.checkExpect(compare(true,true), 0);
+    t.checkExpect(compare(true, false), 1);
+    t.checkExpect(compare(false, false), 0);
+    t.checkExpect(compare(false, true), -1);
+}}
+
+import java.util.*;
+import java.nio.file.*;
+import java.nio.*;
+import java.io.IOException;
+import java.util.HashSet;
+
+class CSVTool {
+    // Task 2: CSVTool Implementation
+    // Your code here
+    public static void main(String args[]) throws IOException {
+        List<String> query = Files.readAllLines(Paths.get(args[0])); 
+        List<String>csv = Files.readAllLines(Paths.get(args[1]));
+        HashMap<String, List<String>> hashmap = Map(query,csv,args); 
+        printHashMap(query,hashmap);
+    }
+    public static HashSet<String> compare(List<String> csv, String s){ 
+        HashSet<String> match = new HashSet<String>();
+        match.add(s);
+        for(int i = 0; i < csv.size(); i++){ 
+            HashSet<String> pmatch = new HashSet<String>();
+            for(int g = 0; g <csv.get(i).split(",").length; g++){
+            pmatch.add(csv.get(i).split(",")[g]);
+            }
+            if(pmatch.contains(s)){
+            match.addAll(pmatch);
+            }
+        }
+        return match;
+        }
+    public static HashSet<String> compare(List<String> csvn, HashSet<String> match){
+        HashSet<String> matchn = match;
+        List<String> prevmatch = new ArrayList<String>(match);
+        for(int i = 0; i < csvn.size(); i++){ 
+            HashSet<String> pmatch = new HashSet<String>();
+            for(int j = 0; j <csvn.get(i).split(",").length; j++){
+            pmatch.add(csvn.get(i).split(",")[j]);
+            }
+            for(int g = 0; g < prevmatch.size(); g++){
+                if(pmatch.contains(prevmatch.get(g))){
+                    matchn.addAll(pmatch);
+                }
+            }
+        }
+            return matchn;
+        }
+    public static HashMap<String, List<String>> Map(List<String> query, List<String> csv, String[] args) throws IOException{ 
+        HashMap<String, List<String>> hashmap = new HashMap<String, List<String>> ();
+        for(String s : query){
+            HashSet<String> match = compare(csv, s);
+            if(args.length > 2){
+                for(int i = 2; i < args.length; i++){
+                    List<String> csvn = Files.readAllLines(Paths.get(args[i]));
+                    match.addAll(compare(csvn, match));
+                }
+            }
+            List<String> matchlist = new ArrayList<String>(match);
+            hashmap.put(s, matchlist);
+            }
+            return hashmap;
+        }
+    public static void printHashMap(List<String> query, HashMap<String, List<String>> hashmap) { 
+        for(String s : query) {
+            ArrayList<String> list = new ArrayList<>(hashmap.get(s));
+            list.remove((s));
+            List<String> list2 = new ArrayList<String>(list);
+            Collections.sort(list2);
+            System.out.println(s + ": " + list2);
+            list.clear();
+            list2.clear();
+            }
+        }
+}
+
+class Stack<E> {
+    // Task 1.0: Set up Fields
+    // Your code here
+    List<E> contents;
+    Comparator<E> comp;
+    public Stack(List<E> contents, Comparator<E> comp) {
+        this.contents = contents;
+        this.comp = comp;
+    }
+    // Task 1.1: push() method
+    // Your code here
+    void push(E element){
+        contents.add(0,element);
+    }
+    // Task 1.2: pop() method
+    // Your code here
+    E pop(){
+        E x = contents.get(0);
+        contents.remove(0);
+        return x;
+    }
+    // Task 1.3: findElements() method
+    // Your code here
+    int findElements(E element){
+        int number = 0;
+        if(contents.size() < 1){
+            return number;
+        }
+        
+        for(int i = 0; i < contents.size(); i++){
+            if(comp.compare(element,contents.get(i)) == 0){
+                number = number+1;
+            }
+        }
+        return number;
+    }
+    // Task 1.4: removeElements() method
+    // Your code here
+    boolean removeElements(E element, int num){
+        if(findElements(element) == 0){
+            throw new NoSuchElementException(); //this line
+            /*
+            class             method          this reference        other variables
+            StackExamples     testStack         <ignore>             q = :1; n = :2; x = :3
+            Stack             removeElements     :2; :3              none
+            Stack             findElements       :2                  number = 0
+            */
+        }
+        for (int g = 0; g < num;g++){
+            for(int i = 0; i < contents.size(); i++) {
+                if(comp.compare(contents.get(i), element) == 0) {
+                    contents.remove(i);
+                    break;
+                }
+            }
+        }
+        if(findElements(element) > 0) {
+            return false;
+        }
+        return true;
+        }
+}
+class StackExamples {
+    void testStack(Tester t) {
+        Stack<Integer> q = new Stack(new ArrayList(), new IntCompare_Sanity());
+        int n = 1;
+        int x = 1;
+        t.checkExpect(q.removeElements(x, n), false); //this line 
+    }
+}
+
+class StringSearch{
+    public static void main(String args[]) throws IOException {
+        String y = args[0];
+        String contents = Files.readString(Paths.get(y));
+        System.out.println(contents);
+    }
+}
+
+class Pair {
+  int a;
+  int b;
+  Pair(int a, int b) {
+    this.a = a;
+    this.b = b;
+  }
+}
+class ArrayExamples{
+  static String joinWith(String[] array, String separator) {
+    String output = "";
+    for(int i = 0; i < array.length; i++) { 
+      if (i == array.length - 1) {
+        output = output+array[i];
+      } else {
+        output = output+array[i]+separator;
+      }
+    }
+    return output;
+  }
+  static boolean somethingFalse(boolean[] array2) {
+    for(int i = 0; i < array2.length; i++) {
+      if (array2[i] == false) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static int countWithinRange(double[] arrayd, double low, double high) {
+    int g = 0;
+    if (arrayd.length == 0) {
+      return 0;
+    }
+    for(int i = 0; i < arrayd.length; i++) {
+      if (arrayd[i] >= low && arrayd[i] <= high) {
+        g++;
+      }
+    }
+    return g;
+  }
+
+  static double[] numsWithinRange(double[] arrayd, double low, double high) {
+    int j = 0;
+    if (arrayd.length == 0) {
+      return arrayd;
+    }
+    double[] Return = new double[countWithinRange(arrayd, low, high)];
+
+    for(int i = 0; i < arrayd.length; i++) {
+      if (arrayd[i] >= low && arrayd[i] <= high) {
+        Return[j] = arrayd[i];
+        j++;
+      }
+    }
+    return Return;
+  }
+  static Pair maxmin(int[] array) {
+    int a = array[0];
+    int b = array[0];
+    for(int i = 0; i < array.length; i++) {
+      if (array[i] > b) {
+        b = array[i];
+      }
+      if (array[i] < a) {
+        a = array[i];
+      }
+    }
+    return new Pair(a,b);
+  }
+
+  static String earliest(String[] array) {
+    String string = array[0]; 
+    if (array.length == 1) {
+      return string;
+    }
+    for(int i = 1; i < array.length; i++) {
+      if (string.compareTo(array[i]) > 0) { 
+        string = array[i];
+      }
+    }
+    return string;
+  }
+  void testJoinWith(Tester t){
+    String[] example1 = {"a", "b","c", "d", "e"};
+    String[] example2 = {"a", "b","c", "d"};
+    String[] example3 = {};
+    t.checkExpect(ArrayExamples.joinWith(example1, ":"), "a:b:c:d:e");
+    t.checkExpect(ArrayExamples.joinWith(example2, ","), "a,b,c,d");
+    t.checkExpect(ArrayExamples.joinWith(example3, ":"), "");
+  }
+
+  void testSomethingFalse(Tester t){
+    boolean[] example1 = {true, false,};
+    boolean[] example2 = {true, true, true};
+    boolean[] example3 = {};
+    t.checkExpect(ArrayExamples.somethingFalse(example1), true);
+    t.checkExpect(ArrayExamples.somethingFalse(example2), false);
+    t.checkExpect(ArrayExamples.somethingFalse(example3), false);
+  }
+
+  void testCountWithinRange(Tester t){
+    double[] example1 = {1, 13, 26, 39};
+    double[] example2 = {1, 1, 1};
+    double[] example3 = {};
+    t.checkExpect(ArrayExamples.countWithinRange(example1, 11, 22), 1);
+    t.checkExpect(ArrayExamples.countWithinRange(example2, 0, 2), 3);
+    t.checkExpect(ArrayExamples.countWithinRange(example3, 1, 2), 0);
+  }
+
+  void testNumsWithinRange(Tester t){
+    double[] example = {1, 13, 26, 39};
+    double[] expected = {13};
+    double[] example1 = {1, 1, 1};
+    double[] expected1 = {1, 1, 1};
+    double[] example2 = {};
+    double[] expected2 = {};
+    t.checkExpect(ArrayExamples.numsWithinRange(example, 11, 22), expected);
+    t.checkExpect(ArrayExamples.numsWithinRange(example1, 0, 2), expected1);
+    t.checkExpect(ArrayExamples.numsWithinRange(example2, 0, 10), expected2);
+  }
+
+  void testMaxmin(Tester t){
+    int[] example = {4, 5, 6, -3, -2, -1};
+    int[] example1 = {1,2,3};
+    int[] example2 = {10, -10};
+    t.checkExpect(ArrayExamples.maxmin(example), new Pair(-3, 6));
+    t.checkExpect(ArrayExamples.maxmin(example1), new Pair(1, 3));
+    t.checkExpect(ArrayExamples.maxmin(example2), new Pair(-10, 10));
+  }
+
+  void testEarliest(Tester t){
+    String[] example = {"apple", "aab", "abs", "a", "z"};
+    String[] example1 = {"aa", "ab","ac"};
+    String[] example2 = {"c"};
+    t.checkExpect(ArrayExamples.earliest(example), "a");
+    t.checkExpect(ArrayExamples.earliest(example1), "aa");
+    t.checkExpect(ArrayExamples.earliest(example2), "c");
+  }
+}
+
+
+class ProvidedArrayExamples {
+  void testJoinWith(Tester t){
+    String[] example1 = {"a", "b","c"};
+    t.checkExpect(ArrayExamples.joinWith(example1, ":"), "a:b:c");
+  }
+
+  void testSomethingFalse(Tester t){
+    boolean[] example1 = {true, false};
+    t.checkExpect(ArrayExamples.somethingFalse(example1), true);
+  }
+
+  void testCountWithinRange(Tester t){
+    double[] example = {0.1, 1.3, 2.6};
+    t.checkExpect(ArrayExamples.countWithinRange(example, 1.1, 2.2), 1);
+  }
+
+  void testNumsWithinRange(Tester t){
+    double[] example = {0.0, 3.0, 1.4, 1.5, 2.7, 9.1, 2.1};
+    double[] expected = {1.4, 1.5, 2.1};
+    t.checkExpect(ArrayExamples.numsWithinRange(example, 1.1, 2.2), expected);
+  }
+
+  void testMaxmin(Tester t){
+    int[] example = {4, 5, 2, 3, 1};
+    t.checkExpect(ArrayExamples.maxmin(example), new Pair(1, 5));
+  }
+
+  void testEarliest(Tester t){
+    String[] example = {"aa", "aab", "abcd", "a"};
+    t.checkExpect(ArrayExamples.earliest(example), "a");
+  }
+}
+
+            String[] newArray2 = new String[args.length-2];
+            for(int i = 1; i < args.length-1; i++) {
+                newArray2[i-1] = args[i+1];
+            }
+            Command test = new Lesser(args[1]);
+            printArray(test.execute(newArray2));
+        }
+
+        if (args[0].equals("equal")) {
+            String[] newArray2 = new String[args.length-2];
+            for(int i = 1; i < args.length-1; i++) {
+                newArray2[i-1] = args[i+1];
+            }
+            Command test = new Equal(args[1]);
+            printArray(test.execute(newArray2));
+        }
+
+        if (args[0].equals("-list") || args[0].equals("-l")) {
+            int count = 0;
+            int count2 = 0;
+            for(int i = 1; i < args.length; i++) {
+                if (args[i].equals("negative") || args[i].equals("positive") || args[i].equals("count") || 
+                args[i].equals("min") || args[i].equals("max") || args[i].equals("mean") || args[i].equals("product")
+                || args[i].equals("sum") ) {
+                    count++;
+                } else if (args[i].equals("equal") || args[i].equals("lesser") || args[i].equals("greater")) {
+                    count++;
+                    count2--;
+                } else {
+                    count2++;
+                }
+            }
+            Command[] commands = new Command[count];
+            String[] intdata = new String[count2];
+
+            int g = 0;
+            for(int i = 1; i < args.length; i++) {
+                if (args[i].equals("equal") || args[i].equals("lesser") || args[i].equals("greater")
+                || args[i].equals("negative") || args[i].equals("positive") || args[i].equals("count") || 
+                args[i].equals("min") || args[i].equals("max") || args[i].equals("mean") || args[i].equals("product")
+                || args[i].equals("sum") ) {
+                    if (args[i].equals("sum")) { 
+                        commands[g] = new Sum();
+                    }
+            
+                    if (args[i].equals("product")) {
+                        commands[g] = new Product();
+                    }
+
+                    if (args[i].equals("mean")) {
+                        commands[g] = new Mean();
+                    }
+            
+                    if (args[i].equals("max")) {
+                        commands[g] = new Max();
+                    }
+            
+                    if (args[i].equals("min")) {
+                        commands[g] = new Min();
+                    }
+            
+                    if (args[i].equals("count")) {
+                        commands[g] = new Count();
+                    }
+            
+                    if (args[i].equals("positive")) {
+                        commands[g] = new Positive();
+                    }
+            
+                    if (args[i].equals("negative")) {
+                        commands[g] = new Negative();
+                    }
+            
+                    if (args[i].equals("greater")) {
+                        commands[g] = new Greater(args[i+1]);
+                        
+                    }
+                    
+                    if (args[i].equals("lesser")) {
+                        commands[g] = new Lesser(args[i+1]);
+                        
+                    }
+            
+                    if (args[i].equals("equal")) {
+                        commands[g] = new Equal(args[i+1]);
+                        
+                    }
+                    g++;
+                }
+            }
+
+            for(int i = 0; i < count2; i++) {
+                intdata[i] = args[args.length-count2+i];
+            }
+
+            Command test = new CmdList(commands);
+            printArray(test.execute(intdata));
+        }
+    }
+
+    public static void printArray(String[] data) {
+        for(String element: data) {
+            System.out.print(element+" ");
+        }
+    }
+}
+
+class Sum implements Command {
+    public String[] execute(String[] data) {
+        int g = 0;
+        String[] estring = new String[1];
+        if (data.length == 0) {
+            estring[0] = 0+"";
+            return estring;
+        }
+        for(int i = 0; i < data.length; i++) {
+            g = g + Integer.parseInt(data[i]);
+        }
+        estring[0] = g+"";
+        return estring;
+    }
+
+}
+class Product implements Command {
+    public String[] execute(String[] data) {
+        int g = 1;
+        String[] estring = new String[1];
+        if (data.length == 0) {
+            estring[0] = 1+"";
+            return estring;
+        }
+        for(int i = 0; i < data.length; i++) {
+            g = g * Integer.parseInt(data[i]);
+        }
+        estring[0] = g+"";
+        return estring;       
+    }
+}
+class Mean implements Command {
+    public String[] execute(String[] data) {
+        double g = 0;
+        String[] estring = new String[1];
+        if (data.length == 0) {
+            estring[0] = 0+"";
+            return estring;
+        }
+        for(int i = 0; i < data.length; i++) {
+            g = g + Integer.parseInt(data[i]);
+        }
+        g = g / data.length;
+        estring[0] = g+"";
+        return estring;        
+    }    
+} 
+class Max implements Command {
+    public String[] execute(String[] data) {
+        int g = Integer.parseInt(data[0]);
+        String[] estring = new String[1];
+        if (data.length == 0) {
+            return new String[0]; 
+        }
+        for(int i = 1; i < data.length-1; i++) {
+            if(Integer.parseInt(data[i]) > g) {
+                g = Integer.parseInt(data[i]);
+            }
+        }
+        estring[0] = g+"";
+        return estring;        
+    }
+} 
+class Min implements Command {
+    public String[] execute(String[] data) {
+        int g = Integer.parseInt(data[0]);
+        String[] estring = new String[1];
+        if (data.length == 0) {
+            return new String[0]; 
+        }
+        for(int i = 1; i < data.length-1; i++) {
+            if(Integer.parseInt(data[i]) < g) {
+                g = Integer.parseInt(data[i]);
+            }
+        }
+        estring[0] = g+"";
+        return estring;        
+    }    
+} 
+class Count implements Command {
+    public String[] execute(String[] data) {
+        int g = 0;
+        String[] estring = new String[1];
+        if (data.length == 0) {
+            estring[0] = 0+"";
+            return estring;
+        }
+        g = data.length;
+        estring[0] = g+"";
+        return estring;        
+    }    
+} 
+class Positive implements Command {
+    public String[] execute(String[] data) {
+        int g = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) > 0) {
+                g++;
+            }
+        }
+        String[] estring = new String[g];
+        if (g == 0) {
+            return new String[0]; 
+        }
+        int j = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) > 0) {
+                estring[j] = data[i];
+                j++;
+            }
+        }
+
+        return estring; 
+    }    
+} 
+class Negative implements Command {
+    public String[] execute(String[] data) {
+        int g = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) < 0) {
+                g++;
+            }
+        }
+        String[] estring = new String[g];
+        if (g == 0) {
+            return new String[0]; 
+        }
+        
+        int j = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) < 0) {
+                estring[j] = data[i];
+                j++;
+            }
+        }
+
+        return estring; 
+    }    
+} 
+class Greater implements Command {
+    String number;
+    Greater(String number) {
+        this.number=number;
+    }
+    
+    public String[] execute(String[] data) {
+        int g = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) > Integer.parseInt(number)) {
+                g++;
+            }
+        }
+        String[] estring = new String[g];
+        if (g == 0) {
+            return new String[0]; 
+        }
+        
+        int j = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) > Integer.parseInt(number)) {
+                estring[j] = data[i];
+                j++;
+            }
+        }
+
+        return estring; 
+    }    
+} 
+class Lesser implements Command {
+    String number;
+    Lesser(String number) {
+        this.number=number;
+    }
+
+    public String[] execute(String[] data) {
+        int g = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) < Integer.parseInt(number)) {
+                g++;
+            }
+        }
+        String[] estring = new String[g];
+        if (g == 0) {
+            return new String[0]; 
+        }
+        
+        int j = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) < Integer.parseInt(number)) {
+                estring[j] = data[i];
+                j++;
+            }
+        }
+
+        return estring; 
+    }
+} 
+class Equal implements Command {
+    String number;
+    Equal(String number) {
+        this.number=number;
+    }
+
+    public String[] execute(String[] data) {
+        int g = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) == Integer.parseInt(number)) {
+                g++;
+            }
+        }
+        String[] estring = new String[g];
+        if (g == 0) {
+            return new String[0]; 
+        }
+        
+        int j = 0;
+        for(int i = 0; i < data.length; i++) {
+            if(Integer.parseInt(data[i]) == Integer.parseInt(number)) {
+                estring[j] = data[i];
+                j++;
+            }
+        }
+
+        return estring; 
+    }    
+}
+
+class CmdList implements Command {
+    Command[] commands;
+    CmdList(Command[] commands) {
+        this.commands=commands;
+    }
+    public String[] execute(String[] data) {
+        for(int i = 0; i < commands.length; i++) {
+            data = commands[i].execute(data);
+        }
+        return data;
+    }    
+}   
+class ExampleArrays {
+    
+    // Task 1.1: averageWithThreshold
+    Number averageWithThreshold(Number [] a, Number thresholdNumber){
+        if(a.length == 0){
+            return new WholeNumber(0);
+        }
+        else{
+            int count = 0;
+            for(Number i:a){
+                if(i.compare(thresholdNumber) == 1){
+                    count +=1;
+                }
+            }
+            if (count >0){
+                count = count;
+            }
+            else{
+                count +=1;
+            }
+            Number total = new WholeNumber(0);
+            for(Number i:a){    
+                if(i.compare(thresholdNumber) == 1){
+                    total = total.add(i);
+                }  
+            }
+            Number ncount = new Fraction(1,count);    
+            return total.multiply(ncount); 
+        }   
+    }
+    /* Video Task
+    Number [] a = { new WholeNumber(1) , new WholeNumber(5), new WholeNumber(6), new WholeNumber(2)};
+    Number thresholdNumber = new WholeNumber(2);
+    Number total = new WholeNumber(0);
+    for(Number i:a){    
+        if(i.compare(thresholdNumber) == 1){
+            total = total.add(i);
+        }  
+    }
+    /*
+    iteration total start   total end                     
+    */
+
+
+
+    // Task 1.2: findGoodPairs
+    Pair [] findGoodPairs(Pair [] a){
+        int count = 0;
+        for(Pair i:a){
+            if(i.a < i.b){
+                count +=1;
+            }
+        }
+        Pair [] result = new Pair [count];
+        int index = 0;
+        for(Pair i :a){
+            if(i.a < i.b){
+                result[index] = i;
+                index++;
+            }
+
+        }
+        return result;
+    }
+    // Task 1.3: mergePairs
+    Pair [] mergePairs(Pair [] p1, Pair [] p2){
+        int count = 0;
+        if(p1.length > p2.length){
+            count += p2.length;
+        }
+        else{
+            count += p1.length;
+        }
+        Pair [] result = new Pair[count];
+        for (int i = 0; i <count; i++){
+            result[i] = new Pair(0,0);
+        }
+        int index = 0;
+        for(int i = 0; i < count; i++){
+            if(p1[i].a >p2[i].a){
+                result[index].a = p2[i].a;
+                index++;
+            }
+            else{
+                result[index].a = p1[i].a;
+                index++;
+            }
+        }
+        int index2 = 0;
+        for(int i = 0; i<count; i++){
+            if(p1[i].b >p2[i].b){
+                result[index2].b = p1[i].b;
+                index2++;
+            }
+            else{
+                result[index2].b = p2[i].b;
+                index2++;
+            }
+        }
+        return result;
+    }
+    
+}
+
+class Pair {
+    // Task 1.2: Pair class
+    int a;
+    int b;
+    Pair(int a, int b){
+        this.a = a;
+        this.b = b;
+    }
+}
+interface Number {
+    // Methods from PA4 - DO NOT MODIFY
+    int numerator();
+    int denominator();
+    Number add(Number n);
+    Number multiply(Number n);
+    double toDouble();
+    String toText();
+
+    // Task 1.1: compare
+    int compare(Number n);
+}
+
+class WholeNumber implements Number {
+    int n;
+    WholeNumber(int n){
+        this.n = n;
+    }
+    public int numerator(){
+        return n;
+    }
+    public int denominator() {
+        return 1;
+    }
+    public Number add(Number other) {
+        if (other.denominator() == 1){
+            return new WholeNumber(this.n +other.numerator());
+        }
+        else{
+            return new Fraction((this.n*other.denominator())+other.numerator(),other.denominator());
+        }
+    }
+    public Number multiply(Number other) {
+        if (other.denominator() == 1) {
+            return new WholeNumber(this.n*other.numerator());
+        } 
+        else {
+            return new Fraction((this.n*other.numerator()),other.denominator()); 
+        } 
+    }
+    public String toText() {
+        return Integer.toString(n);
+    }
+    public double toDouble() {
+        double d = n;
+        return d;
+    }
+    // Task 1.1: compare 
+    public int compare(Number n){
+        int x = 0;
+        if(this.toDouble() > n.toDouble()){
+            x = 1;
+        }
+        else if(this.toDouble() < n.toDouble()){
+            x = -1;
+        }
+        else{
+            x = 0;
+        }
+        return x;
+
+    }
+}
+
+class Fraction implements Number {
+    int n;
+    int d;
+    Fraction(int n, int d) { 
+        this.n=n;
+        this.d=d;
+    }
+
+    public int numerator() {
+        return this.n;
+    }
+
+    public int denominator() {
+        return this.d;
+    }
+
+    public Number add(Number other) {
+        if (other.denominator() == 1) {
+            return new Fraction(this.n+(other.numerator()*this.d),this.d); 
+        } else {
+            return new Fraction(this.n*other.denominator()+(other.numerator()*this.d),other.denominator()*this.d); 
+        }
+    }
+
+    public Number multiply(Number other) {
+        return new Fraction(this.n*other.numerator(),other.denominator()*this.d); 
+    }
+
+    public String toText() {
+        return this.n+"/"+this.d;
+    }
+
+    public double toDouble() {
+        return (double)(this.n)/(double)(this.d);
+    }
+    // Task 1.1: compare 
+    public int compare(Number n){
+        int x = 0;
+        if(this.toDouble() > n.toDouble()){
+            x = 1;
+        }
+        else if(this.toDouble() < n.toDouble()){
+            x = -1;
+        }
+        else{
+            x = 0;
+        }
+        return x;
+
+    }}
+interface Tweet {
+    // Task 2.1: latestTweetOnThread
+    Tweet latestTweetOnThread();
+    // Task 2.2: longestUsernameOnThread
+    User longestUsernameOnThread();
+    // Provided methods, DO NOT MODIFY
+    User getAuthor();
+    String getContents();
+    int getLikes();
+    Tweet getReplyTo();
+    String getDate();
+}
+
+// User class, DO NOT MODIFY
+class User {
+    String username, displayName;
+    int followers;
+    User(String username, String displayName, int followers) {
+        this.username = username;
+        this.displayName = displayName;
+        this.followers = followers;
+    }
+
+    String toText() {
+        return username + " @" + displayName;
+    }
+}
+
+class TextTweet implements Tweet {
+    User author;
+    String contents;
+    String date;
+    int likes;
+
+    TextTweet(String contents, User author, int likes, String date) {
+        this.author = author;
+        this.contents = contents;
+        this.likes = likes;
+        this.date = date;
+        
+    }
+
+    // Task 2.1: latestTweetOnThread
+    public Tweet latestTweetOnThread(){
+        return this;
+    }
+
+    // Task 2.2: longestUsernameOnThread
+    public User longestUsernameOnThread(){
+        return this.author;
+    }
+
+    // Provided methods, DO NOT MODIFY
+    public User getAuthor() {
+        return author;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public Tweet getReplyTo() {
+        return null;
+    }
+    public String getDate(){
+        return date;
+    }
+
+}
+
+class ReplyTweet implements Tweet {
+    User author;
+    String contents;
+    int likes;
+    String date; 
+    Tweet replyTo;
+
+    ReplyTweet(String contents, User author, int likes, String date, Tweet replyTo) {
+        this.author = author;
+        this.contents = contents;
+        this.likes = likes;
+        this.date = date;
+        this.replyTo = replyTo;
+    }
+
+    // Task 2.1: latestTweetOnThread
+    public Tweet latestTweetOnThread(){
+        Tweet t1;
+        if(Integer.parseInt(this.getDate().split("-")[1]) > Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[1])){
+            t1 = this;
+        }
+        else if(Integer.parseInt(this.getDate().split("-")[1]) == Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[1])){
+            if(Integer.parseInt(this.getDate().split("-")[0]) > Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[0])){
+                t1 = this;
+            }
+            else if (Integer.parseInt(this.getDate().split("-")[0]) < Integer.parseInt(this.replyTo.latestTweetOnThread().getDate().split("-")[0])){
+                t1 = this.replyTo.latestTweetOnThread();
+            }
+            else{
+                t1 = this;
+            }
+        }
+        else{
+            t1 = this.replyTo.latestTweetOnThread();
+        }
+        return t1;
+    }
+
+    // Task 2.2: longestUsernameOnThread
+    public User longestUsernameOnThread(){
+        if(this.getAuthor().username.length() >= this.replyTo.longestUsernameOnThread().username.length()){
+            return this.getAuthor();
+        }
+        else{
+            return this.replyTo.longestUsernameOnThread();
+        }
+    }
+
+    // Provided methods, DO NOT MODIFY
+    public User getAuthor() {
+        return author;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public Tweet getReplyTo() {
+        return replyTo;
+    }
+
+    public String getDate(){
+        return date;
+    }
+}
+
+
+class ExampleTweets{
+    User u1 = new User("Joe", "TheRealJoe", 12);
+    User u2 = new User("Jim", "TheFakeJim", 12);
+    Tweet t1 = new TextTweet("Hello, anyone having a good day?", u1, 12, "06-2025");
+    Tweet t5 = new ReplyTweet("Yea pretty good, how about you?", u2, 13, "06-2020", t1);
+    Tweet t2 = new ReplyTweet("Yea pretty good, how about you?", u2, 13, "07-2020", t5);
+    Tweet t3 = new ReplyTweet("Not bad, not bad", u1, 12,"08-2022",t2);
+    Tweet t4 = t3.latestTweetOnThread();
+}
+
+class WordFilter {
+    // Task 3: WordFilter
+    static boolean filter(String a){
+        int len = a.length();
+        boolean x = true;
+        if((a.length() == 1)){
+            x = false;
+        }
+        else{
+            for (int i = 0; i < len/2; i++){
+                if((a.charAt(i) != a.charAt(len-i-1))){
+                    x = false;
+                }
+                else{
+                    x = true;
+                }
+            }
+            return x;
+        }
+        return x;
+    }
+
+    public static void main(String[] args){
+        if(args.length == 0){
+            System.out.print("Empty Array");
+        }
+        else{
+            for(String i:args){
+                if(filter(i)){
+                    System.out.print(i + " ");
+                }
+            } 
+        }
+    }
+}
+class LongStrings{
+    static String[] longStrings(String[] String, int n) {
+        int count = 0;
+        for(int i = 0; i < String.length; i++) {
+            if(String[i].length() >= n) {
+                count++;
+            }
+        }
+        String[] rstring = new String[count];
+        int x = 0;
+        for(int i = 0; i < String.length; i++) {
+            if(String[i].length() >= n) {
+                rstring[x] = String[i];
+                x++;
+            }
+        }
+        return rstring;
+    }}
+class Examples2{
+    void testLongStrings(Tester t){
+        String[] e1 = {"hello", "hey", "hi"};
+        String[] e2 = {"Josh","Jo","J"};
+        int c1 = 2;
+        int c2 = 3;
+
+        String[] ex1 = {"hello", "hey", "hi"};
+        String[] ex2 = {"hello", "hey"};
+        String[] ex3 = {"Josh","Jo"};
+        String[] ex4 = {"Josh"};
+
+        t.checkExpect(LongStrings.longStrings(e1, c1), ex1);
+        t.checkExpect(LongStrings.longStrings(e1, c2), ex2);
+        t.checkExpect(LongStrings.longStrings(e2, c1), ex3);
+        t.checkExpect(LongStrings.longStrings(e2, c2), ex4);
+    }
+}
+class Pair{
+    int a;
+    int b;
+    Pair(int a, int b){
+        this.a = a;
+        this.b = b;
+    }
+}
+class PairSelect{
+    static int[] getAs(Pair [] pairs){
+        int [] array = new int[pairs.length];
+        for (int i = 0; i < pairs.length; i++){
+            array[i] = pairs[i].a;
+        }
+        return array;
+    }
+}
+class Examples {
+    void testPairSelect(Tester t){
+        Pair p1 = new Pair(0, 2);
+        Pair p2 = new Pair(4, 4);
+        Pair p3 = new Pair(-10, 10);
+        Pair p4 = new Pair(6,9);
+        Pair[] e1 = {p1};
+        Pair[] e2 = {p1, p2};
+        Pair[] e3 = {p1, p2, p3};
+        Pair[] e4 = {p1,p2,p3,p4};
+        int[] ex1 = {0};
+        int[] ex2 = {0, 4};
+        int[] ex3 = {0,4,-10};
+        int[] ex4 = {0,4,-10,6};
+
+        t.checkExpect(PairSelect.getAs(e1), ex1);
+        t.checkExpect(PairSelect.getAs(e2), ex2);
+        t.checkExpect(PairSelect.getAs(e3), ex3);
+        t.checkExpect(PairSelect.getAs(e4), ex4);
+    }
+}
+interface Number {
+    int numerator();
+    int denominator();
+    Number add(Number other);
+    Number multiply(Number other);
+    String toText();
+    double toDouble();
+  }
+class WholeNumber implements Number{
+    int n;
+    WholeNumber(int n){
+        this.n = n;
+    }
+    public int numerator(){
+        return n;
+    }
+    public int denominator() {
+        return 1;
+    }
+    public Number add(Number other) {
+        if (other.denominator() == 1){
+            return new WholeNumber(this.n +other.numerator());
+        }
+        else{
+            return new Fraction((this.n*other.denominator())+other.numerator(),other.denominator());
+        }
+    }
+    public Number multiply(Number other) {
+        if (other.denominator() == 1) {
+            return new WholeNumber(this.n*other.numerator());
+        } 
+        else {
+            return new Fraction((this.n*other.numerator()),other.denominator()); 
+        } 
+    }
+    public String toText() {
+        return Integer.toString(n);
+    }
+    public double toDouble() {
+        double d = n;
+        return d;
+    }
+}
+class Fraction implements Number {
+    int n;
+    int d;
+    Fraction(int n, int d) { 
+        this.n=n;
+        this.d=d;
+    }
+
+    public int numerator() {
+        return this.n;
+    }
+
+    public int denominator() {
+        return this.d;
+    }
+
+    public Number add(Number other) {
+        if (other.denominator() == 1) {
+            return new Fraction(this.n+(other.numerator()*this.d),this.d); 
+        } else {
+            return new Fraction(this.n*other.denominator()+(other.numerator()*this.d),other.denominator()*this.d); 
+        }
+    }
+
+    public Number multiply(Number other) {
+        return new Fraction(this.n*other.numerator(),other.denominator()*this.d); 
+    }
+
+    public String toText() {
+        return this.n+"/"+this.d;
+    }
+
+    public double toDouble() {
+        return (double)(this.n)/(double)(this.d);
+    }
+}
+class Decimal implements Number {
+    int mantissa;
+    int exponent;
+    Decimal(String decimalstring) {
+        this.mantissa = Integer.parseInt((decimalstring.substring(0,decimalstring.indexOf("."))+(decimalstring.substring(decimalstring.indexOf(".")+1,decimalstring.length())))); 
+        this.exponent = -1*((decimalstring.substring(decimalstring.indexOf(".")+1,decimalstring.length())).length());
+    }
+
+    public int numerator() {
+        if (this.exponent < 0) {
+            return this.mantissa;
+        } else {
+            return this.mantissa*((int)Math.pow(10,this.exponent));
+        } 
+    }
+
+    public int denominator() {
+        if (this.exponent < 0) {
+            return ((int)Math.pow(10,-1*this.exponent));
+        } else {
+            return 1;
+        }
+    }
+
+    public Number add(Number other) {
+        if (other.denominator() == 1) {
+            return new Fraction(this.numerator()+(other.numerator()*this.denominator()),this.denominator()); 
+        } else {
+            return new Fraction(this.numerator()*other.denominator()+(other.numerator()*this.denominator()),other.denominator()*this.denominator());
+            
+        }
+    }
+
+    public Number multiply(Number other) {
+        if (other.denominator() == 1) {
+            return new Fraction(this.numerator()*(other.numerator()),this.denominator()); 
+        } else {
+            return new Fraction(this.numerator()*other.numerator(),other.denominator()*this.denominator());
+            
+        }
+    }
+
+    public String toText() {
+        String number = this.mantissa+"";
+        String start; String end;
+        int value;
+        if (this.exponent < 0) {
+            value = number.length() - Math.abs(this.exponent);
+            start = number.substring(0, value);
+            end = number.substring(value, number.length()); 
+            return start+"."+end;
+        } else {
+            return (this.mantissa*Math.pow(10,this.exponent))+"."+0; 
+        }
+    }
+
+    public double toDouble() {
+        return ((double)this.mantissa)/Math.pow(10, -this.exponent);
+    }
+}
+class ExampleNumbers {
+    Number n1 = new WholeNumber(5);
+    Number n2 = new WholeNumber(7);
+    Number n3 = new Fraction(7, 2);
+    Number n4 = new Fraction(1, 2);
+    Number n5 = new Decimal("3.25");
+    Number n6 = new Decimal("5.5");
+
+    void testAdd(Tester t) {
+        t.checkExpect(this.n1.add(this.n2).toDouble(), 12.0);
+        t.checkExpect(this.n1.add(this.n3).toDouble(), 5 + 7.0/2.0);
+        t.checkExpect(this.n3.add(this.n3).toDouble(), 7.0);
+        t.checkExpect(this.n5.add(this.n4).toDouble(), 3.75);
+    }
+
+    void testMultiply(Tester t) {
+        t.checkExpect(this.n1.multiply(this.n4).toDouble(), 2.5);
+        t.checkExpect(this.n3.multiply(this.n4).toDouble(), 7.0/4.0);
+        t.checkExpect(this.n6.multiply(this.n1).toDouble(), 27.5);
+    }
+
+    void testNumDem(Tester t) {
+        t.checkExpect(this.n3.numerator(), 7);
+        t.checkExpect(this.n1.numerator(), 5);
+        t.checkExpect(this.n5.numerator(), 325);
+        t.checkExpect(this.n4.denominator(), 2);
+        t.checkExpect(this.n2.denominator(), 1);
+        t.checkExpect(this.n6.denominator(), 10);
+    }
+
+    void testToString(Tester t) {
+        t.checkExpect(this.n4.toText(), "1/2");
+        t.checkExpect(this.n3.toText(), "7/2");
+        t.checkExpect(this.n2.toText(), "7");
+        t.checkExpect(this.n5.toText(), "3.25");
+    }
+    //Exploration
+    double t1 = 0.1+0.2+0.3;
+    double t2 = 0.1+(0.2+0.3);
+    Number n7 = new Fraction(1, 10);
+    Number n8 = new Fraction(2, 10);
+    Number n9 = new Fraction(3, 10);
+    Number task1 = (n7.add(n8)).add(n9);
+    Number task2 = n7.add((n8.add(n9)));
+    String text1 = task1.toText();
+    String text2 = task2.toText();
+}
+interface Tweet{
+    public boolean isReplyTo(Tweet other);
+    public int totalLikes();
+    public String allAuthors();
+    public boolean textAppearsOnThread(String text);
+    public int countPopularTweets(int minNumLikes);
+}
+class User{
+    String username;
+    String displayname;
+    int followers;
+    User(String username, String displayname, int followers){
+        this.username = username;
+        this.displayname = displayname;
+        this.followers = followers;
+    }
+    String toText(){
+        return displayname + " @" + username;
+    }
+}
+class TextTweet implements Tweet{
+    String contents;
+    User author;
+    int likes;
+    TextTweet(String contents, User author, int likes){
+        this.contents = contents;
+        this.author = author;
+        this.likes = likes;
+    }
+    public boolean isReplyTo(Tweet other){
+        return false;
+    }
+    public int totalLikes(){
+        return this.likes;
+    }
+    public String allAuthors(){
+        return this.author.username;
+    }
+     public boolean textAppearsOnThread(String text) {
+        if (this.contents.contains(text)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    public int countPopularTweets(int minNumLikes) {
+        if (this.likes>minNumLikes){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+}
+class ReplyTweet implements Tweet{
+    String contents;
+    User author;
+    int likes;
+    Tweet replyTo;
+    ReplyTweet(String contents, User author, int likes, Tweet replyTo){
+        this.contents = contents;
+        this.author = author;
+        this.likes = likes;
+        this.replyTo = replyTo;
+    }
+
+    public boolean isReplyTo(Tweet other) {
+        if(other == replyTo){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public int totalLikes() {
+        return this.replyTo.totalLikes() + this.likes;
+    }
+
+    public String allAuthors() {
+        
+        return this.author.username + ";" + this.replyTo.allAuthors();
+    }
+
+    public boolean textAppearsOnThread(String text) {
+        if (this.contents.contains(text) || this.replyTo.textAppearsOnThread(text)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public int countPopularTweets(int minNumLikes){
+        if (this.likes>minNumLikes){
+            return 1 + replyTo.countPopularTweets(minNumLikes);
+        }
+        else{
+            return replyTo.countPopularTweets(minNumLikes);
+    }
+    }
+}
+class ClassExample{
+    User greg = new User("gregory_miranda", "Greg Miranda", 9999);
+    User sanmi = new User("sanmi_adeleye", "Sanmi Adeleye", 999);
+    User sangeetha = new User("sangeetha_viswanathan_sakthivel", "Sangeetha Viswanathan Sakthivel", 1000000);
+    Tweet t1 = new TextTweet("Java 17 has a cool feature called records", this.sanmi, 77);
+    Tweet t2 = new ReplyTweet("Hmm I wonder if we could use it for CSE11", this.greg, 12, this.t1);
+    Tweet t3 = new ReplyTweet("Thought about this more, probably not yet, too new.", this.greg, 73, this.t2);
+    Tweet t4 = new ReplyTweet("Yeah, good point. Maybe in 2022.", this.sanmi, 10, this.t3);
+    Tweet t5 = new ReplyTweet("Yeah... I don't want to rewrite the book right this minute", this.sangeetha, 1005, this.t2);
+
+    void testIsReplyTo(Tester t) {
+        t.checkExpect(this.t1.isReplyTo(this.t2), false);
+        t.checkExpect(this.t2.isReplyTo(this.t1), true);
+        t.checkExpect(this.t5.isReplyTo(this.t2), true);
+        t.checkExpect(this.t2.isReplyTo(this.t2), false);
+        t.checkExpect(this.t4.isReplyTo(this.t3), true);
+    }
+
+    void testTotalLikes(Tester t) {
+        t.checkExpect(this.t5.totalLikes(), 1005 + 12 + 77);
+        t.checkExpect(this.t4.totalLikes(), 10 + 73 + 12 + 77);
+        t.checkExpect(this.t1.totalLikes(), 77);
+    }
+
+    void testAllAuthors(Tester t) {
+        t.checkExpect(this.t1.allAuthors(), "sanmi_adeleye");
+        t.checkExpect(this.t2.allAuthors(), "gregory_miranda;sanmi_adeleye");
+        t.checkExpect(this.t3.allAuthors(), "gregory_miranda;gregory_miranda;sanmi_adeleye");
+        t.checkExpect(this.t5.allAuthors(), "sangeetha_viswanathan_sakthivel;gregory_miranda;sanmi_adeleye");
+    }
+
+    void testTextAppearsOnThread(Tester t) {
+        t.checkExpect(this.t1.textAppearsOnThread("sanmi_adeleye"), false);
+        t.checkExpect(this.t1.textAppearsOnThread("2022"), false);
+        t.checkExpect(this.t1.textAppearsOnThread("cool"), true);
+        t.checkExpect(this.t4.textAppearsOnThread("wonder"), true);
+        t.checkExpect(this.t4.textAppearsOnThread("Java"), true);
+        t.checkExpect(this.t4.textAppearsOnThread("rewrite"), false);
+        t.checkExpect(this.t4.textAppearsOnThread("2022"), true);
+    }
+
+    void testCountPopularTweets(Tester t) {
+        t.checkExpect(this.t1.countPopularTweets(100), 0);
+        t.checkExpect(this.t2.countPopularTweets(10), 2);
+        t.checkExpect(this.t3.countPopularTweets(70), 2);
+        t.checkExpect(this.t5.countPopularTweets(0), 3);
+    }
+}
+class ExampleTweets{
+    User Wardell = new User("TSM_FTX_Wardell","Matt Yu",100000);
+    User Tenz = new User("Sen_Tenz","Tyson Ngo",200000);
+    User Josh = new User("Zanis","Joshua Chen",100);
+    Tweet t1 = new TextTweet("TSM_FTX is the best Valorant team on the planet",this.Wardell,1000);
+    Tweet t2 = new ReplyTweet("Nah the Sentinels are the best",this.Tenz,1000,t1);
+    Tweet t3 = new ReplyTweet("When does TSM play?",this.Josh,10,t1);
+    Tweet t4 = new ReplyTweet("See yall next VCT and lets find out",this.Wardell,1000,t2);
+    Tweet t5 = new ReplyTweet("Sure, can't wait",this.Tenz,1000,t4);
+    void testIsReplyTo(Tester t) {
+        t.checkExpect(this.t1.isReplyTo(this.t2), false);
+        t.checkExpect(this.t2.isReplyTo(this.t1), true);
+        t.checkExpect(this.t3.isReplyTo(this.t1),true);
+    }
+
+    void testTotalLikes(Tester t) {
+        t.checkExpect(this.t5.totalLikes(), 1000 + 1000 + 1000+1000);
+        t.checkExpect(this.t3.totalLikes(), 10 + 1000);
+    }
+
+    void testAllAuthors(Tester t) {
+        t.checkExpect(this.t3.allAuthors(), "Zanis;TSM_FTX_Wardell");
+        t.checkExpect(this.t4.allAuthors(), "TSM_FTX_Wardell;Sen_Tenz;TSM_FTX_Wardell");
+    }
+
+    void testTextAppearsOnThread(Tester t) {
+        t.checkExpect(this.t1.textAppearsOnThread("Sure"), false);
+        t.checkExpect(this.t5.textAppearsOnThread("Nah"), true);
+    }
+
+    void testCountPopularTweets(Tester t) {
+        t.checkExpect(this.t5.countPopularTweets(999), 4);
+        t.checkExpect(this.t3.countPopularTweets(100), 1);
+    }
+}
+class R{
+    String R_string;
+    R other;
+    R(String R_string, R other){
+        this.R_string = R_string;
+        this.other = other;
+    }
+}
+class ExampleR{
+    
+    R other = new R("string", example);
+}
+
+class C1 {
+    C2 other;
+    C1(C2 other) {
+      this.other = other;
+    }
+  }
+  
+  class C2 {
+    int x;
+    C2(int x) {
+      this.x = x;
+    }
+  }
+class Task1{
+    C2 first = new C2(10);
+    C2 another = new C2(100);
+    C1 second = new C1(another);
+    C1 third =  new C1(first);
+}
+
+class TimeStamp{
+  String date;
+  String month;
+  String year;
+  TimeStamp(String date, String month, String year){
+  this.date = date;
+  this.month = month;
+  this.year = year;
+  }
+}
+// Task 2: Account class
+class Account{
+  double availableBalance;
+  TimeStamp timestamp;
+  String accountID;
+  Account(double availableBalance, TimeStamp timestamp, String accountID){
+    this.availableBalance = availableBalance;
+    this.timestamp = timestamp;
+    this.accountID = accountID;
+  }
+  double deposit(double amount){
+    availableBalance = availableBalance + amount;
+    return availableBalance;
+  }
+  String withdraw(double moneygone){
+    if(availableBalance>=moneygone){
+      availableBalance = availableBalance - moneygone;
+      return "Valid Transaction";
+    }
+    else{
+      return "Invalid Transaction";
+    }
+    
+    }
+  
+}
+
+class BankTransfer {
+
+  // Task 2: At least 1 TimeStamp object
+TimeStamp t1 = new TimeStamp("1","1","2019");
+
+  // Task 2: At least 1 Account object
+Account a1 = new Account(180,t1,"1");
+
+
+  // Task 2: At least 1 call of deposit method
+double d1 = a1.deposit(120);
+  // // Task 2: At least 2 calls of withdraw method
+String w1 = a1.withdraw(120);
+String w2 = a1.withdraw(1000);
+}
+class Line {
+    int slope;
+    int intercept;
+    int x;
+    int computeY(int m, int x_coord, int c){
+        this.slope = m;
+        this.intercept = c;
+        this.x = x_coord;
+        return m*x_coord + c;
+    }
+    double calculateSlope(double x1, double y1, double x2, double y2){
+        return (y2-y1)/(x2-x1);
+    }
+    int y = this.computeY(2,3,5);
+    double slope2 = this.calculateSlope(1,1,2,2);
+    double slope3 = this.calculateSlope(2,2,2,2);
+}
+class User{
+    String username;
+    String displayname;
+    int followers;
+    User(String username, String displayname, int followers){
+        this.username = username;
+        this.displayname = displayname;
+        this.followers = followers;
+    }
+    String toText(){
+        return displayname + " @" + username;
+    }
+}
+
+class Tweet{
+    User user;
+    String content;
+    int likes;
+    String ID;
+    Tweet(String content, User user, int likes, String ID){
+        this.user = user;
+        this.content = content;
+        this.likes = likes;
+        this.ID = ID;
+    }
+    boolean longerThan(Tweet other){
+        if(this.content.length() > other.content.length()){
+            return true;
+        }
+        else{
+            return false;
+        }
+    
+    }
+    boolean moreLikes(Tweet other){
+        if(this.likes > other.likes){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    String toText(){
+        return user.toText() + " : " + this.content + " : " + this.likes + " Likes";
+    }
+    String toLink(){
+        return "https://twitter.com/" + user.displayname + "/status/" + this.ID;
+}
+}
+class ExampleTweets{
+    User u1 = new User("UCSDEngineering", "UCSDJacobs", 13127);
+    User u2 = new User("ACM @ UCSD", "acmucsd", 44);
+    User u3 = new User("Cassidy", "cassido", 182034);
+    Tweet t1 = new Tweet("Excited to welcome @DrMunyakaHCC on our faculty! Learn more about her research: cse.ucsd.edu/about/news/imani-munyaka-improving-human-experience #WomenInSTEM @ucsd_cse",u1, 5, "1512569980629356545");
+    Tweet t2 = new Tweet("War as seen on TikTok: story in @guardian quotes @ucsd_cse Prof. Julian McAuley: https://www.theguardian.com/technology/2022/mar/05/tiktok-ukraine-russia-invasion-clips-get-views-whether-true-or-not", u1, 3, "1507070493324562437");
+    //https://twitter.com/acmucsd/status/1460311995916251136//
+    //I could not represent the pictures of the tweet with the class design we chose//
+    Tweet t3 = new Tweet("Thanks to GEAR for awesome panel this past Friday at the GEAR Blockchain Workshop! We learned a lot and hope everyone that attended learned something new about the power of blockchain Make sure to visit GEAR at gear-tech.io and follow them @gear_techs!", u2, 21, "1460311995916251136");
+    Tweet t4 = new Tweet("I love being a woman on the Internet", u3, 53662, "1284201376516435968");
+    String m1_1 = this.u1.toText();
+    String m1_2 = this.u2.toText();
+    boolean m2_1 = t1.longerThan(t2);
+    boolean m2_2 = t3.longerThan(t1);
+    boolean m3_1 = t4.moreLikes(t1);
+    boolean m3_2 = t3.moreLikes(t2);
+    String m4_1 = t2.toText();
+    String m4_2 = t4.toText();
+    String m5_1 = t4.toLink();
+    String m5_2 = t3.toLink();
+}
+
+
+
+

@@ -1,0 +1,598 @@
+/* Q1 */
+USE Chinook
+SELECT *
+FROM Employee
+/* Q2 */
+SELECT 
+	FirstName,
+	LastName,
+	Email
+From Employee
+/* Q3 */
+SELECT
+	Name,
+	Composer,
+	AlbumId
+FROM Track
+WHERE AlbumId = 19
+/* Q4 */
+SELECT 
+	Name AS [Track Title],
+	Composer,
+	AlbumId
+FROM Track
+WHERE AlbumId = 19
+ORDER BY Composer, Name
+/* Q5 */
+SELECT TOP 5
+	BillingCountry,
+	BillingCity,
+	Total
+FROM Invoice
+WHERE BillingCountry != 'USA'
+ORDER BY Total DESC
+/* Q6 */
+SELECT DISTINCT
+	State,
+	Country
+FROM Customer
+WHERE Country = 'USA'
+/* Q7 */
+SELECT 
+	CustomerId,
+	BillingCity,
+	BillingPostalCode,
+	Total
+FROM Invoice
+WHERE BillingCountry = 'Germany' AND Total > 5
+ORDER BY CustomerId, Total DESC
+/* Q8 */
+SELECT DISTINCT TOP 20
+	Country AS [Country Name], 
+	State AS [State or Region]
+FROM Customer
+ORDER BY Country, State
+/* Q9 */
+SELECT 
+	AlbumId, MediaTypeId, Name
+FROM Track
+WHERE AlbumID <= 5 OR MediaTypeId = 2
+ORDER BY AlbumId
+/* Q10 */
+SELECT 
+	AlbumId, Name, Milliseconds, UnitPrice
+FROM Track
+Where (AlbumId = 5 and Milliseconds > 300000) or UnitPrice > 0.99
+ORDER BY AlbumId, Milliseconds
+/*Q1*/
+USE Chinook
+SELECT
+	FirstName, LastName
+FROM
+	Employee
+WHERE ReportsTo IS NOT NULL
+/*Q2*/
+SELECT *
+FROM Customer
+WHERE State != 'CA' OR State IS NULL
+/*Q3*/
+SELECT *
+FROM Invoice
+WHERE InvoiceDate BETWEEN '2010-04-01' AND '2010-05-01'
+/*Q4*/
+SELECT
+	Title, AlbumId
+FROM Album
+WHERE Title LIKE 'The%'
+/*Q5*/
+SELECT*
+FROM Album
+WHERE TITLE LIKE '[^A-Z]%'
+/*Q6*/
+SELECT	
+	CustomerId,BillingCity, BillingCountry, InvoiceDate
+FROM Invoice
+WHERE BillingCountry IN ('Canada', 'Germany', 'France', 'Spain', 'India')
+ORDER BY InvoiceDate DESC
+/*Q7*/
+SELECT *
+FROM Album
+WHERE ArtistId IN(
+	SELECT ArtistId
+	FROM Artist
+	WHERE Name LIKE '%Black%')
+/*Q8*/
+SELECT *
+FROM Track
+WHERE NOT EXISTS (
+  SELECT *
+  FROM InvoiceLine
+  WHERE InvoiceLine.TrackId = Track.TrackId
+)
+/*Q9*/
+SELECT *
+FROM Track
+WHERE MediaTypeId = 5 AND GenreId != 1 OR Composer = 'Gene Simmons'
+/*Q10*/
+SELECT *
+FROM Track
+WHERE AlbumId = 237 AND (Composer LIKE '%Dylan%' OR Composer LIKE '%Hendrix%')
+USE Chinook
+/*Q1*/
+SELECT
+	Name, REPLACE(Name, ' & ', 'and') NewName
+FROM Genre
+WHERE Name LIKE '%&%'
+/*Q2*/
+SELECT 
+	CONCAT(FirstName, ' ', LastName) AS FullName,
+	DAY(BirthDate) AS [Day],
+	DATENAME(MONTH, BirthDate) [Month],
+	YEAR(BirthDate) [Year]
+FROM Employee
+/*Q3*/
+SELECT
+	REPLACE(Title,' ','') TitleNoSpaces
+	,UPPER(Title) TitleUpperCase
+	,REVERSE(Title) TitleReverse
+	,LEN(Title) TitleLength
+	,PATINDEX('% %',Title) SpaceLocation
+FROM Album
+/*Q4*/
+SELECT
+	FirstName
+	,LastName
+	,BirthDate
+	,DATEDIFF(YEAR,BirthDate,getdate()) Age 
+	,DATEDIFF(HOUR,BirthDate,GETDATE())/8766 Age2 
+FROM Employee
+/*Q5*/
+SELECT
+	Title
+	,RTRIM(SUBSTRING(Title,PATINDEX('% %',Title),LEN(Title))) ShortTitle
+FROM Employee
+/*Q6*/
+SELECT
+	FirstName
+	,LastName
+	,LEFT(FirstName,1)+LEFT(LastName,1) Initials
+FROM Customer
+ORDER BY Initials
+/*Q7*/
+SELECT
+	FirstName
+	,LastName
+	,SUBSTRING(REPLACE(PHONE,'-',' '),4,LEN(Phone)) Phone
+	,ISNULL(SUBSTRING(REPLACE(FAX,'-',' '),4,LEN(Phone)),'unknown') Fax
+FROM Customer
+WHERE Country = 'USA'
+ORDER BY LastName
+/*Q8*/
+SELECT
+	UPPER(CONCAT(LastName,', ',FirstName)) CustomerName
+	,ISNULL(Company,'N/A') Company
+FROM Customer
+WHERE LastName LIKE '[A-M]%'
+ORDER BY CustomerName
+/*Q9*/
+SELECT
+	InvoiceId
+	,CustomerId
+	,Total
+	,CAST(InvoiceDate AS date) InvoiceDate
+	,CONCAT('FY',YEAR(DATEADD(MONTH,6,InvoiceDate))) FiscalYear
+FROM Invoice
+ORDER BY InvoiceDate DESC
+/*Q9*/
+SELECT
+	IIF(Country IN('USA','Canada'),'Domestic','International') CustomerType
+	,FirstName
+	,LastName
+	,Country
+FROM Customer
+ORDER BY CustomerType, LastName
+/*Question 1*/
+USE Chinook
+SELECT
+	A.Name AS ArtistName
+	,AL.Title AS AlbumTitle
+FROM Artist AS A
+JOIN Album AS AL
+	ON AL.ArtistId = A.ArtistId
+WHERE A.Name LIKE '[A-D]%'
+ORDER BY A.Name, AL.Title
+/*Question 2*/
+SELECT 
+	A.Name As ArtistName
+	,AL.Title AS AlbumTitle
+FROM Artist AS A
+LEFT JOIN Album AS AL
+	ON AL.ArtistId = A.ArtistId
+WHERE A.Name LIKE '[A-D]%'
+ORDER BY A.Name, AL.Title
+/*Question 3*/
+SELECT
+	A.Name AS ArtistName
+	,T.Name AS TrackName
+FROM Artist AS A
+JOIN Album AS AL
+	ON AL.ArtistId = A.ArtistId
+JOIN Track AS T
+	ON T.AlbumID = Al.AlbumID
+JOIN Genre AS G
+	ON G.GenreId = T.GenreId
+WHERE G.Name = 'Alternative'
+ORDER By A.Name, T.Name
+/*Question 4*/
+SELECT
+	E1.FirstName, E2.LastName
+FROM Employee AS E1
+CROSS JOIN Employee As E2
+/*Question 5*/
+SELECT
+	P.Name AS PlaylistName
+	,A.Name AS ArtistName
+	,AL.Title AS AlbumTitle
+	,T.Name AS TrackName
+	,G.Name AS GenreName
+FROM Playlist P
+JOIN PlaylistTrack PT
+	ON PT.PlaylistId = P.PlaylistId
+JOIN Track T
+	ON T.TrackId = PT.TrackId
+JOIN Genre G
+	ON G.GenreId = T.GenreId
+JOIN Album AL
+	ON AL.AlbumId = T.AlbumId
+JOIN Artist A
+	ON A.ArtistId = AL.ArtistId
+WHERE P.Name = 'Grunge'
+/*Question 6*/
+SELECT
+	Title
+	,Name
+	,Milliseconds/1000 AS Seconds
+FROM Album AL
+JOIN Track T
+	ON T.AlbumId = AL.AlbumId
+WHERE AL.Title = 'Let There Be Rock'
+/*Question 7*/
+SELECT
+	E.FirstName + ' ' + E.LastName AS CustomerRep
+	,C.Country
+	,CONCAT(C.Firstname,' ', C.LastName) AS CustomerName
+FROM Employee E
+JOIN Customer C
+	ON C.SupportRepId = E.EmployeeId
+ORDER BY CustomerRep, C.Country
+/*Question 8*/
+SELECT
+	AL.Title
+	,T.Name
+	,IL.InvoiceId
+FROM Album AL
+JOIN Track T
+	ON T.AlbumId = AL.AlbumId
+LEFT JOIN InvoiceLine IL
+	ON IL.TrackId = T.TrackId
+ORDER BY Name, InvoiceId DESC
+/*Question 9*/
+SELECT
+	E.EmployeeId
+	,E.LastName
+	,E.FirstName
+	,E.ReportsTo
+	,ISNULL(M.FirstName+' '+M.LastName,'N/A') AS ManagerName
+FROM Employee E
+LEFT JOIN Employee M
+ON M.EmployeeId = E.ReportsTo
+/*Question 10*/
+SELECT
+	C.LastName
+	,AL.Title
+	,T.Name
+	,CONVERT(varchar,InvoiceDate, 103) PurchaseDate
+FROM Customer C
+JOIN Invoice I
+	ON I.CustomerId = C.CustomerId
+JOIN InvoiceLine IL
+	ON IL.InvoiceId = I.InvoiceId
+JOIN Track T
+	ON T.TrackId = IL.TrackId
+JOIN Album AL
+	ON AL.AlbumId = T.AlbumId
+WHERE C.FirstName = 'Julia'
+	AND C.LastName = 'Barnett'
+ORDER BY InvoiceDate, Title, Name
+/*Q1*/
+USE Chinook
+SELECT
+	T.Name TrackName
+	,MT.Name MediaName
+	,CASE
+		WHEN MT.MediaTypeId = 3 THEN 'Video'
+		ELSE 'Audio'
+		END MediaType
+	,CASE
+		WHEN MT.Name LIKE '%mpeg%' THEN 'MPEG'
+		WHEN MT.Name LIKE '%aac%' THEN 'AAC'
+		ELSE 'Unknown'
+		END EncodingFormat
+FROM Track T
+LEFT JOIN MediaType MT
+	ON MT.MediaTypeId = T.MediaTypeId
+ORDER BY MT.Name
+/*Q2*/
+SELECT
+	MT.Name AS MediaTypeName
+	,COUNT(*) AS TotalTracks
+FROM Track T
+JOIN MediaType MT
+	ON MT.MediaTypeId = T.MediaTypeId
+GROUP BY MT.Name
+/*Q3*/
+SELECT
+	E.FirstName
+	,E.LastName
+	,YEAR(InvoiceDate) SaleYear
+	,SUM(I.Total) TotalSales
+FROM
+Employee E
+JOIN Customer C
+	ON C.SupportRepId = E.EmployeeId
+JOIN Invoice I
+	ON I.CustomerId = C.CustomerId
+GROUP BY
+	E.FirstName
+	,E.LastName
+	,YEAR(InvoiceDate)
+ORDER BY LastName, SaleYear
+/*Q4*/
+SELECT
+	C.FirstName
+	,C.LastName
+	,MAX(Total) MaxInvoice
+FROM Customer C
+JOIN Invoice I
+	ON I.CustomerId = C.CustomerId
+GROUP BY
+	C.FirstName
+	,C.LastName
+/*Q5*/
+SELECT
+	Country
+	,PostalCode
+	,CASE
+		WHEN PostalCode IS NULL THEN 'Unknown'
+		WHEN ISNUMERIC(Postalcode) = 1 THEN 'Yes'
+		WHEN ISNUMERIC(PostalCode) = 0 THEN 'No'
+		END NumericPostalCode
+FROM Customer
+ORDER BY NumericPostalCode, Country
+/*Q6*/
+SELECT
+	FirstName
+	,LastName
+	,SUM(I.Total) TotalSales
+FROM Customer C
+JOIN Invoice I
+	ON C.CustomerId = I.CustomerId
+GROUP BY
+	FirstName
+	,LastName
+HAVING SUM(I.Total) > 42
+ORDER BY TotalSales DESC
+/*Q7*/
+
+SELECT TOP 1
+	A.Name AS TopArtist
+	--,count(*)
+FROM Artist A
+JOIN Album AL
+	ON AL.ArtistId = A.ArtistId
+JOIN Track T
+	ON T.AlbumId = AL.AlbumId
+GROUP BY A.Name
+ORDER BY COUNT(*) DESC
+/*Q8*/
+SELECT
+	FirstName
+	,LastName
+	,CASE
+		WHEN LastName LIKE '[A-G]%' THEN 'Group1'
+		WHEN LastName LIKE '[H-M]%' THEN 'Group2'
+		WHEN LastName LIKE '[N-S]%' THEN 'Group3'
+		WHEN LastName LIKE '[T-Z]%' THEN 'Group4'
+		END CustomerGrouping
+FROM Customer
+ORDER BY LastName
+/*Q9*/
+SELECT
+	Name AS ArtistName
+	,count(Title) AS AlbumCount
+FROM Artist A
+LEFT JOIN Album AL
+ON AL.ArtistId = A.ArtistId
+GROUP BY Name
+ORDER BY AlbumCount, ArtistName
+/*Q10*/
+SELECT
+	FirstName
+	,LastName
+	,Title
+	,CASE
+		WHEN Title LIKE '%Manager%' THEN 'Management'
+		WHEN Title LIKE '%Sales%' THEN 'Sales'
+		WHEN Title LIKE '%IT%' THEN 'Technology'
+		ELSE 'Unknown'
+		END Department
+FROM Employee
+ORDER BY Department
+USE master
+	IF DB_ID('MyDB_JoshuaChen') IS NOT NULL
+BEGIN
+	ALTER DATABASE MyDB_JoshuaChen SET OFFLINE WITH ROLLBACK IMMEDIATE;
+	ALTER DATABASE MyDB_JoshuaChen SET ONLINE;
+	DROP DATABASE MyDB_JoshuaChen;
+END
+
+/*Q1*/
+CREATE DATABASE MyDB_JoshuaChen
+GO
+USE MyDB_JoshuaChen
+/*Q2*/
+SELECT *
+INTO Users
+FROM Chinook.dbo.Customer
+/*Q3*/
+DELETE Users
+WHERE CustomerId%2 = 1
+/*Q4*/
+UPDATE Users
+SET Company = CASE
+	WHEN Email LIKE '%gmail%' THEN 'Google'
+	WHEN Email LIKE '%Yahoo%' THEN 'Yahoo!'
+	ELSE Company
+END
+/*Q5*/
+EXEC sp_rename 'Users.CustomerId', 'UserId', 'COLUMN'
+/*Q6*/
+ALTER TABLE Users
+ADD CONSTRAINT pk_Users PRIMARY KEY (UserId)
+/*Q7*/
+CREATE TABLE Address (
+	AddressId int IDENTITY(1,1) PRIMARY KEY
+	,AddressType varchar(10)
+	,AddressLine1 varchar(50)
+	,City varchar(30)
+	,State varchar(2)
+	,UserID int
+	,CreateDate datetime DEFAULT GETDATE()
+)
+/*Q8*/
+ALTER TABLE Address
+ADD CONSTRAINT uc_AddressType UNIQUE(UserId,AddressType)
+/*Q9*/
+ALTER TABLE Address
+ADD CONSTRAINT fk_UserAddress FOREIGN KEY (UserId) REFERENCES Users(UserId)
+/*Q10*/
+INSERT INTO Address (AddressType,AddressLine1,City,State,UserID)
+VALUES('home','111 Elm St.','Los Angeles','CA',2)
+,('home','222 Palm Ave.','San Diego','CA',4)
+,('work','333 Oak Ln.','La Jolla','CA',4)
+/*Q11*/
+SELECT *
+FROM Address
+SELECT *
+FROM Users
+USE Chinook
+/*Q1*/
+SELECT TOP 10 WITH TIES
+	Artist.Name AS ArtistName
+	,SUM(InvoiceLine.UnitPrice * InvoiceLine.Quantity) AS Total
+FROM Artist
+	JOIN Album
+ON Album.ArtistId = Artist.ArtistId
+	JOIN Track
+ON Track.AlbumId = Album.AlbumId
+	AND Track.MediaTypeId <> 3
+	JOIN InvoiceLine
+ON InvoiceLine.TrackId = Track.TrackId
+	JOIN Invoice
+ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+WHERE Invoice.InvoiceDate BETWEEN '7/1/2011' AND '6/30/2012'
+GROUP BY Artist.Name
+ORDER BY Total DESC
+/*Q2*/
+SELECT
+	Employee.FirstName+' '+Employee.LastName AS [Employee Name]
+	,YEAR(InvoiceDate) AS [Calendar Year]
+	,CASE DATEPART(QUARTER,Invoice.InvoiceDate)
+		WHEN 1 THEN 'First'
+		WHEN 2 THEN 'Second'
+		WHEN 3 THEN 'Third'
+		WHEN 4 THEN 'Fourth'
+		END AS [Sales Quarter]
+	,MAX(Invoice.Total) AS [Highest Sale]
+	,COUNT(Invoice.Total) AS [Number of Sales]
+	,SUM(Invoice.Total) AS [Total Sales]
+FROM
+Employee
+JOIN Customer
+	ON Customer.SupportRepId = Employee.EmployeeId
+JOIN Invoice
+	ON Invoice.CustomerId = Customer.CustomerId
+WHERE Invoice.InvoiceDate BETWEEN '01/01/2010' AND '06/30/2012'
+GROUP BY
+	Employee.FirstName
+	,Employee.LastName
+	,YEAR(InvoiceDate)
+	,DATEPART(QUARTER,Invoice.InvoiceDate)
+ORDER BY [Employee Name],[Calendar Year],DATEPART(QUARTER,Invoice.InvoiceDate)
+/*Q3*/
+SELECT
+	Playlist.Name AS [Playlist Name]
+	,Playlist.PlaylistId AS [Playlist ID]
+	,PlaylistTrack.TrackId AS [Track ID]
+FROM Playlist
+LEFT JOIN PlaylistTrack
+	ON PlaylistTrack.PlaylistId = Playlist.PlaylistId
+WHERE EXISTS(
+SELECT * --name, max(PlaylistId),min(PlaylistId), count(*)
+FROM Playlist P
+GROUP BY P.Name
+HAVING COUNT(*)>1
+AND MAX(P.PlaylistId) = Playlist.PlaylistId)
+/*Q4*/
+SELECT
+	Country
+	,Artist.Name AS [Artist Name]
+	,COUNT(*) AS [Track Count]
+	,COUNT(DISTINCT Track.Name) AS [Unique Track Count]
+	,COUNT(*) - COUNT(DISTINCT Track.Name) AS [Count Difference]
+	,SUM(InvoiceLine.UnitPrice * InvoiceLine.Quantity) AS [Total Revenue]
+	,CASE WHEN MediaType.MediaTypeId = 3 THEN 'Video' ELSE 'Audio' END AS [Media Type]
+FROM Customer
+JOIN Invoice
+	ON Invoice.CustomerId = Customer.CustomerId
+JOIN InvoiceLine 
+	ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+JOIN Track
+	ON Track.TrackId = InvoiceLine.TrackId
+JOIN Album
+	ON Album.AlbumId = Track.AlbumId
+JOIN Artist
+	ON Artist.ArtistId = Album.ArtistId
+JOIN MediaType
+	ON MediaType.MediaTypeId = Track.MediaTypeId
+WHERE Invoice.InvoiceDate BETWEEN '07/01/2009' AND '6/30/2013'
+GROUP BY
+	Country
+	,Artist.Name
+	,CASE WHEN MediaType.MediaTypeId = 3 THEN 'Video' ELSE 'Audio' END
+ORDER BY
+	Country
+	,[Track Count] DESC
+	,Artist.Name
+/*Q5*/
+SELECT
+	FirstName + ' ' + LastName AS [Full Name]
+	,CONVERT(varchar,BirthDate,101) AS [Birth Date]
+	,CONVERT(varchar,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate)),101) AS [Birth Day 2016]
+	,DATENAME(weekday,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate))) AS [Birth Day of Week]
+	,CONVERT(varchar,(CASE
+		WHEN DATEPART(weekday,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate))) = 1
+		THEN DATEADD(DAY,1,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate)))
+		WHEN DATEPART(weekday,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate))) = 7
+		THEN DATEADD(DAY,2,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate)))
+		ELSE DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate))
+		END),101) AS [Celebration Date]
+	,DATENAME(weekday,(CASE
+		WHEN DATEPART(weekday,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate))) = 1
+		THEN DATEADD(DAY,1,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate)))
+		WHEN DATEPART(weekday,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate))) = 7
+		THEN DATEADD(DAY,2,DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate)))
+		ELSE DATEFROMPARTS(2016,Month(BirthDate),Day(BirthDate))
+		END )) AS [Celebration Day of Week]
+FROM Employee
+
