@@ -1,5 +1,5 @@
 # Char-RNN
-A PyTorch implementation of [char-rnn](https://github.com/karpathy/char-rnn) for character-level text generation.This is copied from [Char-RNN.Pytorch](https://github.com/spro/char-rnn.pytorch)
+A PyTorch implementation of [char-rnn](https://github.com/karpathy/char-rnn) for character-level text generation.This is my implementation of [Char-RNN.Pytorch](https://github.com/spro/char-rnn.pytorch)
 
 ## Updates from Original
 fixed train.py error, updated ine 66 to loss.item()/args.chunk_len
